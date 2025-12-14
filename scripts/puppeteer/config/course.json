@@ -1,0 +1,10 @@
+{
+  "baseUrl": "https://learn.cantrill.io",
+  "courseId": "1820301",
+  "startLectureId": "41301611",
+  "autoDetectLectures": true,
+  "sequentialLectures": {
+    "enabled": true,
+    "increment": 1
+  }
+}

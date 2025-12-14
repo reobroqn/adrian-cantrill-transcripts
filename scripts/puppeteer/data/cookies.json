@@ -1,0 +1,32 @@
+[
+  {
+    "name": "session_id",
+    "value": "YOUR_SESSION_ID_HERE",
+    "domain": "learn.cantrill.io",
+    "path": "/",
+    "expires": 1234567890,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "auth_token",
+    "value": "YOUR_AUTH_TOKEN_HERE",
+    "domain": "learn.cantrill.io",
+    "path": "/",
+    "expires": 1234567890,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "user_id",
+    "value": "YOUR_USER_ID_HERE",
+    "domain": "learn.cantrill.io",
+    "path": "/",
+    "expires": 1234567890,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "Lax"
+  }
+]

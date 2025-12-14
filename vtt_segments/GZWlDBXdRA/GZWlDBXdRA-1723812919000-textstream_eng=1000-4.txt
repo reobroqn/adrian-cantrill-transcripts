@@ -1,7 +1,0 @@
-WEBVTT
-X-TIMESTAMP-MAP=MPEGTS:900000,LOCAL:00:00:00.000
-
-3871043866
-00:00:18.000 --> 00:00:24.000
-So security groups and NACLs share many broad concepts but the way they operate is very different.
-

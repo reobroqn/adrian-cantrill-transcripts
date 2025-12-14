@@ -1,7 +1,0 @@
-WEBVTT
-X-TIMESTAMP-MAP=MPEGTS:900000,LOCAL:00:00:00.000
-
-2896209503
-00:00:00.000 --> 00:00:06.000
-Welcome back and in this lesson I want to talk in detail about security groups within AWS.
-

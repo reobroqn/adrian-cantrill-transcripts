@@ -1,9 +1,0 @@
-Welcome back and in this lesson I want to talk in detail about security groups within AWS.
-
-These are the second type of security filtering feature commonly used within AWS.
-
-The other type being network access control lists which we've previously discussed.
-
-So security groups and NACLs share many broad concepts but the way they operate is very different.
-
-and it's essential that you understand those differences and the features offered by security groups
