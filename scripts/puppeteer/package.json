@@ -1,1 +1,29 @@
-{"name":"adrian-transcript-automation","version":"1.0.0","description":"Browser automation for collecting Adrian Cantrill course transcripts","main":"automate.js","scripts":{"start":"node automate.js","dev":"node automate.js --debug","install-deps":"npm install"},"dependencies":{"puppeteer":"^24.33.0"},"keywords":["automation","transcript","puppeteer"],"author":"","license":"MIT","type":"commonjs"}
+{
+    "name": "adrian-transcript-automation",
+    "version": "1.0.0",
+    "description": "Browser automation for collecting Adrian Cantrill course transcripts",
+    "main": "dist/automate.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "node --env-file=.env dist/automate.js",
+        "dev": "node --env-file=.env -r ts-node/register src/automate.ts --debug",
+        "install-deps": "npm install"
+    },
+    "dependencies": {
+        "puppeteer": "^24.33.0"
+    },
+    "keywords": [
+        "automation",
+        "transcript",
+        "puppeteer"
+    ],
+    "author": "",
+    "license": "MIT",
+    "type": "commonjs",
+    "devDependencies": {
+        "@types/node": "^25.0.2",
+        "@types/puppeteer": "^5.4.7",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3"
+    }
+}

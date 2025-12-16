@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ESNext",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -24,17 +24,5 @@
   "exclude": [
     "node_modules",
     "dist"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "start": "node dist/automate.js",
-    "start:dev": "ts-node src/automate.ts"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "ts-node": "^10.9.0"
-  },
-  "type": "module"
+  ]
 }
