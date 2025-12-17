@@ -8,6 +8,7 @@ parses each segment to extract content, sorts them chronologically,
 removes duplicates, concatenates incomplete sentences, and saves the complete transcript.
 """
 
+import argparse
 import glob
 import os
 import re
@@ -150,8 +151,15 @@ class TranscriptMaker:
 
         return VTTSegment(time_range=time_range, content=full_content, content_id=content_id)
 
-    def process_video(self, video_id: str) -> bool:
-        """Process all segments for a video ID and create a complete transcript."""
+    def process_video(self, video_id: str, output_path: Optional[str] = None) -> bool:
+        """
+        Process all segments for a video ID and create a complete transcript.
+        
+        Args:
+            video_id: The ID of the video to process.
+            output_path: Optional full path for the output file. 
+                         If None, uses default transcripts/{video_id}.txt
+        """
         video_dir = os.path.join(self.segments_dir, video_id)
         if not os.path.exists(video_dir):
             logger.error(f"No segments directory found for video ID: {video_id}")
@@ -181,13 +189,23 @@ class TranscriptMaker:
         # Process segments to remove duplicates and concatenate incomplete sentences
         processed_text = self.process_segments(all_segments)
 
-        # Save the transcript to a file
-        output_file = os.path.join(self.output_dir, f"{video_id}.txt")
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(processed_text)
+        # Determine output file path
+        if output_path:
+            output_file = output_path
+            # Ensure parent directory exists
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        else:
+            output_file = os.path.join(self.output_dir, f"{video_id}.txt")
 
-        logger.info(f"Transcript for {video_id} saved to {output_file}")
-        return True
+        # Save the transcript to a file
+        try:
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(processed_text)
+            logger.info(f"Transcript for {video_id} saved to {output_file}")
+            return True
+        except Exception as e:
+            logger.error(f"Error saving transcript to {output_file}: {e}")
+            return False
 
     def process_segments(self, segments: List[VTTSegment]) -> str:
         """Process segments to remove duplicates and concatenate incomplete sentences."""
@@ -271,8 +289,20 @@ class TranscriptMaker:
 
 def main():
     """Main function to run the transcript maker."""
+    parser = argparse.ArgumentParser(description="Create transcripts from VTT segments.")
+    parser.add_argument("--video-id", help="Process only a specific video ID")
+    parser.add_argument("--output", help="Specific output file path (requires --video-id)")
+    
+    args = parser.parse_args()
+    
     maker = TranscriptMaker()
-    return maker.process_all_videos()
+    
+    if args.video_id:
+        if maker.process_video(args.video_id, args.output):
+            return 0
+        return 1
+    else:
+        return maker.process_all_videos()
 
 
 if __name__ == "__main__":

@@ -5,8 +5,10 @@
     "main": "dist/automate.js",
     "scripts": {
         "build": "tsc",
-        "start": "node --env-file=.env dist/automate.js",
-        "dev": "node --env-file=.env -r ts-node/register src/automate.ts --debug",
+        "start": "node --env-file=.env -r ts-node/register src/video_automator/Player.ts",
+        "dev": "node --env-file=.env -r ts-node/register src/video_automator/Player.ts --debug",
+        "scrape": "node --env-file=.env -r ts-node/register src/video_automator/Scraper.ts",
+        "play": "node --env-file=.env -r ts-node/register src/video_automator/Player.ts",
         "install-deps": "npm install"
     },
     "dependencies": {
