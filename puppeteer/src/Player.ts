@@ -172,8 +172,8 @@ export class Player extends BaseAutomator {
         const cleanLecture = lectureTitle.replace(/[<>:"/\\|?*]/g, '_').trim();
         const outputPath = path.join('transcripts', cleanSection, `${cleanLecture}.txt`);
 
-        // Path to Python script (relative to cwd: scripts/puppeteer)
-        const scriptPath = path.join(__dirname, '..', '..', '..', 'src', 'make_transcripts.py');
+        // Path to Python script (relative to src: ../../fastapi/src/make_transcripts.py)
+        const scriptPath = path.join(__dirname, '..', '..', 'fastapi', 'src', 'make_transcripts.py');
         const command = `python "${scriptPath}" --video-id "${videoId}" --output "${outputPath}"`;
 
         console.log(`Generating Transcript...`);

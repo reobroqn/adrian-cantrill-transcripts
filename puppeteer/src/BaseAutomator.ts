@@ -26,8 +26,8 @@ export class BaseAutomator {
     constructor(options: AutomatorOptions = {}) {
         this.debug = options.debug || false;
         this.headless = options.headless !== false;
-        this.dataDir = path.join(__dirname, '..', '..', 'data');
-        this.configDir = path.join(__dirname, '..', '..', 'config');
+        this.dataDir = path.join(__dirname, '..', 'data');
+        this.configDir = path.join(__dirname, '..', 'config');
         this.browser = null;
         this.page = null;
         this.email = options.email || '';
