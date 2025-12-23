@@ -5,14 +5,16 @@
     "main": "dist/automate.js",
     "scripts": {
         "build": "tsc",
-        "start": "node --env-file=.env -r ts-node/register src/video_automator/Player.ts",
-        "dev": "node --env-file=.env -r ts-node/register src/video_automator/Player.ts --debug",
-        "scrape": "node --env-file=.env -r ts-node/register src/video_automator/Scraper.ts",
-        "play": "node --env-file=.env -r ts-node/register src/video_automator/Player.ts",
+        "start": "node --env-file=.env -r ts-node/register src/Player.ts",
+        "dev": "node --env-file=.env -r ts-node/register src/Player.ts --debug",
+        "scrape": "node --env-file=.env -r ts-node/register src/Scraper.ts",
+        "play": "node --env-file=.env -r ts-node/register src/Player.ts",
         "install-deps": "npm install"
     },
     "dependencies": {
-        "puppeteer": "^24.33.0"
+        "puppeteer": "^24.33.0",
+        "puppeteer-extra": "^3.3.6",
+        "puppeteer-extra-plugin-stealth": "^2.11.2"
     },
     "keywords": [
         "automation",

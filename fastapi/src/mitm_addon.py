@@ -3,9 +3,13 @@ import os
 from loguru import logger
 from mitmproxy import http
 
-from .helpers import extract_video_id_and_filename
+from helpers import extract_video_id_and_filename
 
-VTT_DIR = "vtt_segments"
+# Determine the project root directory (../../..) assuming this file is in fastapi/src
+# Determine the project root directory (../../..) assuming this file is in fastapi/src
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+VTT_DIR = os.path.join(DATA_DIR, "vtt_segments")
 os.makedirs(VTT_DIR, exist_ok=True)
 
 

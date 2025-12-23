@@ -89,26 +89,29 @@ export class Player extends BaseAutomator {
 
         for (const item of queue) {
             console.log(`\nProcessing: [${item.section}] ${item.lecture.title}`);
-            const videoId = await this.watchLecture(item.lecture.url);
+            // watchLecture now waits for the video to finish
+            const result = await this.watchLecture(item.lecture.url);
 
-            if (videoId) {
-                console.log(`Extracted Video ID: ${videoId}`);
-                await this.generateTranscript(videoId, item.section, item.lecture.title);
+            if (result && result.videoId) {
+                console.log(`Video finished. Extracted ID: ${result.videoId}`);
+                await this.generateTranscript(result.videoId, item.section, item.lecture.title);
             } else {
-                console.error(`Could not extract video ID for ${item.lecture.id}`);
+                console.error(`Could not extract video ID or video failed for ${item.lecture.id}`);
             }
         }
 
         return true;
     }
 
-    async watchLecture(url: string): Promise<string | null> {
-        if (!this.page) return null;
+    async watchLecture(url: string): Promise<{ videoId: string | null }> {
+        if (!this.page) return { videoId: null };
 
         let videoId: string | null = null;
 
         // Intercept VTT/HLS request
         const requestHandler = (request: HTTPRequest) => {
+            if (videoId) return; // Already found, stop processing/spamming
+
             const reqUrl = request.url();
             const match = reqUrl.match(/\/video\/([^\/]+)\/hls\//);
             if (match && match[1]) {
@@ -120,10 +123,17 @@ export class Player extends BaseAutomator {
         this.page.on('request', requestHandler);
 
         console.log(`Navigating to lecture...`);
-        await this.page.goto(url, { waitUntil: 'networkidle2' });
+        // Increased timeout to 60s to avoid transient network timeouts
+        await this.page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
-        // Attempt to play video
-        await this.playVideo();
+        // Attempt to play and mute video
+        const played = await this.playAndMuteVideo();
+
+        if (!played) {
+            console.log("Could not find or play video.");
+            this.page.off('request', requestHandler);
+            return { videoId };
+        }
 
         // Wait for ID
         let attempts = 0;
@@ -133,52 +143,202 @@ export class Player extends BaseAutomator {
         }
 
         if (videoId) {
-            console.log('Video ID found. Watching for segments...');
-            // Wait for segments to be captured by mitmproxy
-            // We can check if file exists or just wait
-            await new Promise(r => setTimeout(r, 15000)); // 15s wait
+            console.log('Video ID found. Watching until finished...');
+            await this.waitForVideoToFinish();
         }
 
         this.page.off('request', requestHandler);
-        return videoId;
+        return { videoId };
     }
 
-    async playVideo(): Promise<boolean> {
+    async playAndMuteVideo(): Promise<boolean> {
         if (!this.page) return false;
 
-        // Try clicking iframes
+        // Wait for frames to load
+        await new Promise(r => setTimeout(r, 3000));
+
         const frames = this.page.frames();
         for (const frame of frames) {
             const url = frame.url();
             if (url.includes('hotmart') || url.includes('wistia') || url.includes('player')) {
                 try {
-                    // Hotmart big play button
-                    const btn = await frame.$('.vjs-big-play-button');
-                    if (btn) {
-                        await btn.click();
-                        return true;
+                    console.log(`Found player frame: ${url}`);
+
+                    // 1. Reset video to start and mute
+                    await frame.evaluate(() => {
+                        const v = document.querySelector('video');
+                        if (v) {
+                            v.currentTime = 0;  // Reset to beginning
+                            v.muted = true;
+                        }
+                    });
+                    console.log("Video reset to start and muted.");
+
+                    // 2. Check initial state
+                    const initialState = await frame.evaluate(() => {
+                        const v = document.querySelector('video');
+                        if (!v) return null;
+                        return {
+                            paused: v.paused,
+                            currentTime: v.currentTime,
+                            duration: v.duration,
+                            readyState: v.readyState
+                        };
+                    });
+
+                    if (!initialState) {
+                        console.error("Video element not found in frame.");
+                        continue;
                     }
-                    // Or body
-                    await frame.click('body').catch(() => { });
+
+                    console.log(`Initial state: paused=${initialState.paused}, duration=${initialState.duration}s, readyState=${initialState.readyState}`);
+
+                    // 3. If paused, try to play
+                    if (initialState.paused) {
+                        console.log("Video is paused. Attempting to play...");
+
+                        // Try JS play first
+                        await frame.evaluate(() => {
+                            const v = document.querySelector('video');
+                            if (v) v.play().catch(e => console.error('Play error:', e));
+                        });
+
+                        await new Promise(r => setTimeout(r, 1000));
+
+                        // Verify playback started
+                        const afterPlayState = await frame.evaluate(() => {
+                            const v = document.querySelector('video');
+                            if (!v) return null;
+                            return {
+                                paused: v.paused,
+                                currentTime: v.currentTime
+                            };
+                        });
+
+                        if (afterPlayState && afterPlayState.paused) {
+                            console.log("JS play failed. Trying to click play button...");
+                            // Try clicking play button in control bar
+                            const playBtn = await frame.$('button[aria-label*="Play"]');
+                            if (playBtn) {
+                                await frame.evaluate((b) => b.click(), playBtn);
+                                await new Promise(r => setTimeout(r, 1000));
+                            }
+                        }
+                    }
+
+                    // 4. Final verification
+                    const finalState = await frame.evaluate(() => {
+                        const v = document.querySelector('video');
+                        if (!v) return null;
+                        return {
+                            paused: v.paused,
+                            currentTime: v.currentTime,
+                            duration: v.duration,
+                            muted: v.muted
+                        };
+                    });
+
+                    if (finalState) {
+                        console.log(`Final state: playing=${!finalState.paused}, currentTime=${finalState.currentTime}s, duration=${finalState.duration}s, muted=${finalState.muted}`);
+                        if (!finalState.paused) {
+                            console.log("✓ Video is playing from the start.");
+                            return true;
+                        } else {
+                            console.warn("⚠ Video is still paused after play attempts.");
+                        }
+                    }
+
+
+
                     return true;
-                } catch (e) { }
+                } catch (e) {
+                    console.error("Error in playAndMuteVideo:", e);
+                }
             }
         }
         return false;
     }
 
+    async waitForVideoToFinish(): Promise<void> {
+        if (!this.page) return;
+
+        console.log("Waiting for video to finish...");
+
+        const checkInterval = 2000;
+        const maxWait = 3600 * 1000; // 1 hour max
+        let waited = 0;
+        let videoDuration: number | null = null;
+
+        while (waited < maxWait) {
+            let finished = false;
+            const frames = this.page.frames();
+            for (const frame of frames) {
+                const url = frame.url();
+                if (url.includes('hotmart') || url.includes('wistia') || url.includes('player')) {
+                    // Get current state
+                    const state = await frame.evaluate(() => {
+                        const player = document.querySelector('.video-js');
+                        const v = document.querySelector('video');
+                        if (!v) return null;
+
+                        return {
+                            ended: player && player.classList.contains('vjs-ended'),
+                            currentTime: v.currentTime,
+                            duration: v.duration,
+                            paused: v.paused
+                        };
+                    });
+
+                    if (!state) continue;
+
+                    // Log duration once
+                    if (videoDuration === null && state.duration > 0) {
+                        videoDuration = state.duration;
+                        console.log(`Video duration: ${Math.floor(videoDuration / 60)}m ${Math.floor(videoDuration % 60)}s`);
+                    }
+
+                    // Check if finished
+                    const timeCheck = state.duration > 0 && state.currentTime >= state.duration - 1;
+                    if (state.ended || timeCheck) {
+                        finished = true;
+                        break;
+                    }
+
+                    // Log progress every 30s
+                    if (waited % 30000 === 0 && videoDuration) {
+                        const progress = (state.currentTime / videoDuration * 100).toFixed(1);
+                        console.log(`Still watching... ${Math.floor(state.currentTime)}s / ${Math.floor(videoDuration)}s (${progress}%) - paused: ${state.paused}`);
+                    }
+                }
+            }
+
+            if (finished) {
+                console.log("Video finished playing.");
+                return;
+            }
+
+            await new Promise(r => setTimeout(r, checkInterval));
+            waited += checkInterval;
+        }
+        console.log("Timed out waiting for video to finish.");
+    }
+
     async generateTranscript(videoId: string, sectionTitle: string, lectureTitle: string): Promise<boolean> {
         const cleanSection = sectionTitle.replace(/[<>:"/\\|?*]/g, '_').trim();
         const cleanLecture = lectureTitle.replace(/[<>:"/\\|?*]/g, '_').trim();
-        const outputPath = path.join('transcripts', cleanSection, `${cleanLecture}.txt`);
+        // Point to root data/transcripts directory
+        const transcriptsDir = path.join(__dirname, '..', '..', 'data', 'transcripts');
+        const outputPath = path.join(transcriptsDir, cleanSection, `${cleanLecture}.txt`);
 
         // Path to Python script (relative to src: ../../fastapi/src/make_transcripts.py)
-        const scriptPath = path.join(__dirname, '..', '..', 'fastapi', 'src', 'make_transcripts.py');
-        const command = `python "${scriptPath}" --video-id "${videoId}" --output "${outputPath}"`;
+        const fastapiDir = path.join(__dirname, '..', '..', 'fastapi');
+        const scriptPath = path.join(fastapiDir, 'src', 'make_transcripts.py');
+        // Use uv run in the fastapi directory so it picks up the environment
+        const command = `uv run python "${scriptPath}" --video-id "${videoId}" --output "${outputPath}"`;
 
         console.log(`Generating Transcript...`);
         try {
-            const { stdout, stderr } = await execPromise(command);
+            const { stdout, stderr } = await execPromise(command, { cwd: fastapiDir });
             // Check if success (simple check, stdout usually contains "saved to")
             if (stdout.includes('saved to')) console.log('Transcript Saved.');
             else console.log(stdout);
@@ -209,7 +369,7 @@ async function main() {
         email: process.env.EMAIL,
         password: process.env.PASSWORD,
         courseId: process.env.COURSE_ID || '1820301',
-        proxy: "127.0.0.1:8080",
+        proxy: process.env.PROXY,
         targetSession: targetSession,
         batchSize: batchSize
     });

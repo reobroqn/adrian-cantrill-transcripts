@@ -1,4 +1,8 @@
-import puppeteer, { Browser, Page } from 'puppeteer';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { Browser, Page } from 'puppeteer';
+
+puppeteer.use(StealthPlugin());
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -10,6 +14,12 @@ export interface AutomatorOptions {
     courseId?: string;
     proxy?: string;
 }
+
+export enum ServiceURL {
+    LOGIN = 'https://sso.teachable.com/secure/212820/identity/login/password?force=true',
+    HOME = 'https://learn.cantrill.io/'
+}
+
 
 export class BaseAutomator {
     protected debug: boolean;
@@ -51,6 +61,7 @@ export class BaseAutomator {
             ];
 
             if (this.proxy) {
+                console.log(`Using Proxy: ${this.proxy}`);
                 args.push(`--proxy-server=${this.proxy}`);
                 args.push('--ignore-certificate-errors');
             }
@@ -63,17 +74,74 @@ export class BaseAutomator {
                     width: 1920,
                     height: 1080
                 }
-            });
+            } as any);
 
-            this.page = await this.browser.newPage();
-
-            await this.page.setUserAgent(
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
-            );
+            this.page = await this.browser!.newPage();
 
             return true;
         } catch (error) {
             console.error('Error initializing browser:', error);
+            return false;
+        }
+    }
+
+    async saveSession(): Promise<boolean> {
+        try {
+            if (!this.page) return false;
+            // page.cookies() is deprecated, use browserContext().cookies()
+            const cookies = await this.page.browserContext().cookies();
+            const localStorageData = await this.page.evaluate(() => {
+                return JSON.stringify(localStorage);
+            });
+            const sessionData = {
+                cookies,
+                localStorage: localStorageData
+            };
+            await fs.writeFile(path.join(this.dataDir, 'session.json'), JSON.stringify(sessionData, null, 2));
+            console.log('Session saved.');
+            return true;
+        } catch (error) {
+            console.error('Failed to save session:', error);
+            return false;
+        }
+    }
+
+    async loadSession(): Promise<boolean> {
+        try {
+            const sessionPath = path.join(this.dataDir, 'session.json');
+            try {
+                await fs.access(sessionPath);
+            } catch {
+                console.log('No session file found.');
+                return false;
+            }
+
+            const data = await fs.readFile(sessionPath, 'utf8');
+            const session = JSON.parse(data);
+
+            if (this.page && session.cookies) {
+                // Ensure cookies are valid CookieParam objects and use browserContext().setCookie()
+                const validCookies = session.cookies.map((cookie: any) => {
+                    // Filter properties if necessary, but usually passing them back works
+                    const { name, value, domain, path, secure, httpOnly, sameSite, expires } = cookie;
+                    return { name, value, domain, path, secure, httpOnly, sameSite, expires };
+                });
+                await this.page.browserContext().setCookie(...validCookies);
+            }
+
+            if (this.page && session.localStorage) {
+                await this.page.evaluateOnNewDocument((data) => {
+                    const ls = JSON.parse(data);
+                    for (const key in ls) {
+                        localStorage.setItem(key, ls[key]);
+                    }
+                }, session.localStorage);
+            }
+
+            console.log('Session loaded.');
+            return true;
+        } catch (error) {
+            console.error('Failed to load session:', error);
             return false;
         }
     }
@@ -87,17 +155,23 @@ export class BaseAutomator {
                 return false;
             }
 
-            console.log('Navigating to login page...');
-            await this.page.goto('https://sso.teachable.com/secure/212820/identity/login/password?force=true', { waitUntil: 'networkidle2' });
+            await this.loadSession();
+
+            console.log('Verifying session...');
+            await this.page.goto(ServiceURL.HOME, { waitUntil: 'networkidle2' });
+
+            // Check if we are still on the course site (not redirected to login)
+            if (!this.page.url().includes('login') && !this.page.url().includes('sign_in')) {
+                console.log('Already logged in (Session restored).');
+                await this.saveSession(); // Refresh session file
+                return true;
+            }
+
+            console.log('Session expired or not found. Navigating to login...');
+            await this.page.goto(ServiceURL.LOGIN, { waitUntil: 'networkidle2' });
 
             // Wait for autofill to settle
             await new Promise(r => setTimeout(r, 3000));
-
-            // Check if already logged in (redirected)
-            if (!this.page.url().includes('login')) {
-                console.log('Already logged in or redirected.');
-                return true;
-            }
 
             console.log('Filling credentials...');
             await this.page.waitForSelector('#email', { visible: true });
@@ -136,6 +210,9 @@ export class BaseAutomator {
                 console.error(`Screenshot saved to ${path.join(this.dataDir, 'login_failed.png')}`);
                 return false;
             }
+
+            console.log('Login successful. Saving session...');
+            await this.saveSession();
 
             return true;
         } catch (error) {

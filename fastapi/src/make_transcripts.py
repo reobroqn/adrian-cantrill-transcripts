@@ -16,6 +16,13 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from loguru import logger
+import pathlib
+
+# Determine the project root directory
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+DEFAULT_SEGMENTS_DIR = os.path.join(DATA_DIR, "vtt_segments")
+DEFAULT_OUTPUT_DIR = os.path.join(DATA_DIR, "transcripts")
 
 
 @dataclass(frozen=True, eq=True)
@@ -44,9 +51,9 @@ class VTTSegment:
 class TranscriptMaker:
     """Class to process VTT segments and create complete transcripts."""
 
-    def __init__(self, segments_dir: str = "vtt_segments", output_dir: str = "transcripts"):
-        self.segments_dir = segments_dir
-        self.output_dir = output_dir
+    def __init__(self, segments_dir: Optional[str] = None, output_dir: Optional[str] = None):
+        self.segments_dir = segments_dir or DEFAULT_SEGMENTS_DIR
+        self.output_dir = output_dir or DEFAULT_OUTPUT_DIR
 
         # Ensure the output directory exists
         os.makedirs(self.output_dir, exist_ok=True)
