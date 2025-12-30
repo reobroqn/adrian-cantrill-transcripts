@@ -1,51 +1,35 @@
 # Adrian Cantrill Transcript Automation - Project Overview
 
-This project is a TypeScript-based automation tool designed to extract and process transcripts from Adrian Cantrill's AWS courses. It leverages Puppeteer for browser automation and custom logic for VTT (WebVTT) interception and parsing.
+This project is a TypeScript-based automation tool designed to extract and process transcripts from Adrian Cantrill's AWS courses.
 
-## 🏗️ Project Architecture
+## 🏗️ Refactored Architecture
 
-The codebase is organized into a clean, modular structure:
+The codebase follows a clean, service-oriented architecture:
 
-### 1. Automator (`src/automator/`)
-Handles the heavy lifting of browser interaction.
-- **`Scraper.ts`**: The entry point for crawling the course syllabus. It extracts sections and lecture metadata (titles, URLs) and saves them to `data/course_manifest.json`.
-- **`Player.ts`**: The core execution engine. It iterates through the manifest, navigates to lecture pages, and plays videos to trigger VTT network requests.
-- **`BaseAutomator.ts`**: Provides a common foundation for both the Scraper and Player, including session management (login), browser initialization, and utility methods.
+### 1. Core Services (`src/core/`)
+- **`ConfigService.ts`**: Centralized configuration management (ENV variables, file paths).
+- **`BrowserService.ts`**: Manages Puppeteer browser lifecycle and page creation.
+- **`Logger.ts`**: Consistent logging system across the application.
 
-### 2. Interceptor (`src/interceptor/`)
-Focuses on capturing real-time network traffic.
-- **`VttInterceptor.ts`**: Hooks into the Puppeteer page to watch for outgoing requests for `.vtt` files. It captures the VTT content as it streams in from the CDN.
+### 2. Platform Layer (`src/platform/`)
+- **`IPlatform.ts`**: Interface for course platforms (login, scraping).
+- **`TeachablePlatform.ts`**: Implementation for Adrian Cantrill's course site.
 
-### 3. Transcript Processing (`src/transcript/`)
-Converts raw subtitle data into readable formats.
-- **`VttParser.ts`**: Contains logic to clean up VTT formatting, remove timestamps, and join segments into a coherent text body.
-- **`helpers.ts`**: Utility functions for file path management and text sanitization.
+### 3. Automator Logic (`src/automator/`)
+- **`AutomationCoordinator.ts`**: The main orchestrator that binds platforms, browser, and processing.
+- **`VideoPlayerController.ts`**: Encapsulates low-level video interactions (play, mute, wait for end).
+- **`Player.ts`**: Entry point for playing videos and capturing transcripts.
+- **`Scraper.ts`**: Entry point for scraping course manifests.
 
-### 4. Data Storage (`data/`)
-- `course_manifest.json`: The source of truth for the course structure.
-- `vtt_segments/`: Cached raw VTT data intercepted during playback.
-- `transcripts/`: The final output - clean text files organized by course section.
+### 4. Processing Layer
+- **`src/interceptor/VttInterceptor.ts`**: Captures VTT segments from network traffic.
+- **`src/transcript/VttParser.ts`**: Parses raw VTT files into clean text transcripts.
 
-## 🚀 Key Workflows
+## 🚀 Workflows
 
-### Phase 1: Scraping
-Run `npm run scrape` to generate the `course_manifest.json`. This requires a valid login session.
+- **Scrape Manifest**: `npm run scrape`
+- **Capture Transcripts**: `npm run play` (use `--batch-size` or `--session` for specific targets).
 
-### Phase 2: Playing & Intercepting
-Run `npm run play` (or `npm run play -- --batch-size X`) to start the browser. The script will:
-1. Log in to the course platform.
-2. Load lectures one by one.
-3. Use the `VttInterceptor` to grab the subtitle streams.
-4. Pass the data to the `VttParser`.
-
-## 🛠️ Tech Stack
-- **Runtime**: Node.js
-- **Language**: TypeScript
-- **Automation**: Puppeteer (with `puppeteer-extra-plugin-stealth`)
-- **Linting/Formatting**: Biome
-- **Transpilation**: `ts-node` for development, `tsc` for builds.
-
-## 📝 Usage Notes for Agents
-- **Environment Variables**: Ensure `EMAIL`, `PASSWORD`, and `COURSE_ID` are set in `.env` at the root.
-- **Authentication**: The automator handles login via `BaseAutomator.ts`. It uses a profile directory to persist cookies where possible.
-- **Headless Mode**: Use `--debug` flag in scripts to toggle headless mode off for visual debugging.
+## 🛠️ Dev Notes
+- **Extensibility**: To support a new platform, implement the `IPlatform` interface and register it in the coordinator.
+- **Validation**: Environment variables are validated on startup via `ConfigService`.
