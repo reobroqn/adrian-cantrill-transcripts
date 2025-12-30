@@ -1,7 +1,7 @@
 {
     "name": "adrian-transcript-automation",
     "version": "1.0.0",
-    "description": "Browser automation for collecting Adrian Cantrill course transcripts",
+    "description": "Modular TypeScript automation for extracting and processing Adrian Cantrill course transcripts using Puppeteer and a service-oriented architecture",
     "main": "dist/automate.js",
     "scripts": {
         "build": "tsc",
