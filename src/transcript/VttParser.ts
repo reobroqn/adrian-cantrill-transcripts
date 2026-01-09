@@ -1,8 +1,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { glob } from "glob";
-import { ConfigService } from "../core/ConfigService";
-import { Logger } from "../core/Logger";
+import type { ConfigService } from "../core/ConfigService";
+import type { ILogger } from "../core/Logger";
 
 export interface VttSegment {
     timeRange: string;
@@ -11,10 +11,12 @@ export interface VttSegment {
 }
 
 export class VttParser {
-    private readonly config = ConfigService.getInstance();
     private processedContent: Set<string> = new Set();
 
-    constructor() {
+    constructor(
+        private readonly config: ConfigService,
+        private readonly logger: ILogger,
+    ) {
         fs.mkdirSync(this.config.transcriptsDir, { recursive: true });
     }
 
@@ -22,7 +24,7 @@ export class VttParser {
         const videoDir = path.join(this.config.vttDir, videoId);
 
         if (!fs.existsSync(videoDir)) {
-            Logger.error(`No segments found for video: ${videoId}`);
+            this.logger.error(`No segments found for video: ${videoId}`);
             return false;
         }
 
@@ -47,7 +49,7 @@ export class VttParser {
             fs.writeFileSync(outputPath, processedText, "utf-8");
             return true;
         } catch (error) {
-            Logger.error(`Error saving transcript: ${error}`);
+            this.logger.error(`Error saving transcript: ${error}`);
             return false;
         }
     }
@@ -81,7 +83,7 @@ export class VttParser {
                 if (segment) segments.push(segment);
             }
         } catch (error) {
-            Logger.error(`Error parsing VTT file ${filePath}: ${error}`);
+            this.logger.error(`Error parsing VTT file ${filePath}: ${error}`);
         }
         return segments;
     }

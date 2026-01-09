@@ -1,7 +1,11 @@
-import { BrowserService } from "../core/BrowserService";
-import { Logger } from "../core/Logger";
-import { TeachablePlatform } from "../platform/TeachablePlatform";
 import { AutomationCoordinator } from "./AutomationCoordinator";
+import { LectureProcessor } from "./LectureProcessor";
+import { BrowserService } from "../core/BrowserService";
+import { ConfigService } from "../core/ConfigService";
+import { ConsoleLogger } from "../core/Logger";
+import { VttInterceptor } from "../interceptor/VttInterceptor";
+import { TeachablePlatform } from "../platform/TeachablePlatform";
+import { VttParser } from "../transcript/VttParser";
 
 async function main() {
     const args = process.argv.slice(2);
@@ -15,14 +19,38 @@ async function main() {
     const batchIdx = args.indexOf("--batch-size");
     if (batchIdx !== -1) batchSize = parseInt(args[batchIdx + 1], 10);
 
-    const browserService = new BrowserService({
+    // 1. Core Services
+    const logger = new ConsoleLogger();
+    const config = new ConfigService();
+
+    // 2. Browser Service
+    const browserService = new BrowserService(logger, {
         headless: !debug,
         debug: debug,
-        proxy: process.env.PROXY,
+        proxy: config.proxy, // Accessing proxy from config
     });
 
-    const platform = new TeachablePlatform();
-    const coordinator = new AutomationCoordinator(browserService, platform);
+    // 3. Platform
+    const platform = new TeachablePlatform(config, logger);
+
+    // 4. Processing Components
+    const interceptor = new VttInterceptor(config, logger);
+    const parser = new VttParser(config, logger);
+    const lectureProcessor = new LectureProcessor(
+        interceptor,
+        parser,
+        config,
+        logger,
+    );
+
+    // 5. Coordinator
+    const coordinator = new AutomationCoordinator(
+        browserService,
+        platform,
+        config,
+        logger,
+        lectureProcessor,
+    );
 
     try {
         await coordinator.runPlayer({
@@ -30,7 +58,7 @@ async function main() {
             targetSession,
         });
     } catch (error) {
-        Logger.error(`Player failed: ${error}`);
+        logger.error(`Player failed: ${error}`);
         process.exit(1);
     } finally {
         await browserService.close();
