@@ -1,11 +1,15 @@
 import type { Page } from "puppeteer";
-import { ConfigService } from "../core/ConfigService";
-import { Logger } from "../core/Logger";
+import type { ConfigService } from "../core/ConfigService";
+import type { ILogger } from "../core/Logger";
 import type { IPlatform, Lecture, Manifest, Section } from "./IPlatform";
 
 export class TeachablePlatform implements IPlatform {
     public readonly name = "Teachable";
-    private readonly config = ConfigService.getInstance();
+
+    constructor(
+        private readonly config: ConfigService,
+        private readonly logger: ILogger,
+    ) {}
 
     async isLoggedIn(page: Page): Promise<boolean> {
         await page.goto("https://learn.cantrill.io/", {
@@ -16,7 +20,7 @@ export class TeachablePlatform implements IPlatform {
     }
 
     async login(page: Page): Promise<boolean> {
-        Logger.info("Attempting login to Teachable...");
+        this.logger.info("Attempting login to Teachable...");
 
         await page.goto(
             "https://sso.teachable.com/secure/212820/identity/login/password?force=true",
@@ -28,7 +32,7 @@ export class TeachablePlatform implements IPlatform {
         // Wait for potential autofill
         await new Promise((r) => setTimeout(r, 2000));
 
-        Logger.info("Filling credentials...");
+        this.logger.info("Filling credentials...");
         await page.waitForSelector("#email", { visible: true });
 
         await page.evaluate((email) => {
@@ -51,17 +55,17 @@ export class TeachablePlatform implements IPlatform {
         ]);
 
         if (await this.isLoggedIn(page)) {
-            Logger.info("Login successful.");
+            this.logger.info("Login successful.");
             return true;
         }
 
-        Logger.error("Login failed.");
+        this.logger.error("Login failed.");
         return false;
     }
 
     async scrapeCourse(page: Page, courseId: string): Promise<Manifest> {
         const courseUrl = `https://learn.cantrill.io/courses/enrolled/${courseId}`;
-        Logger.info(`Scraping course from: ${courseUrl}`);
+        this.logger.info(`Scraping course from: ${courseUrl}`);
 
         await page.goto(courseUrl, { waitUntil: "networkidle2" });
         await page.waitForSelector(".course-section", { timeout: 10000 });

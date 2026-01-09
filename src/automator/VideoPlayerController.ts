@@ -1,5 +1,4 @@
 import type { Frame, Page } from "puppeteer";
-import { Logger } from "../core/Logger";
 
 export class VideoPlayerController {
     constructor(private page: Page) {}
@@ -52,7 +51,7 @@ export class VideoPlayerController {
 
             return true;
         } catch (e) {
-            Logger.error(`Error controlling video: ${e}`);
+            console.error(`Error controlling video: ${e}`);
             return false;
         }
     }

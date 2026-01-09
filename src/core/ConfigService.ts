@@ -1,8 +1,6 @@
 import * as path from "node:path";
 
 export class ConfigService {
-    private static instance: ConfigService;
-
     public readonly email = process.env.EMAIL || "";
     public readonly password = process.env.PASSWORD || "";
     public readonly courseId = process.env.COURSE_ID || "1820301";
@@ -16,14 +14,7 @@ export class ConfigService {
         "course_manifest.json",
     );
 
-    private constructor() {}
-
-    public static getInstance(): ConfigService {
-        if (!ConfigService.instance) {
-            ConfigService.instance = new ConfigService();
-        }
-        return ConfigService.instance;
-    }
+    constructor() {}
 
     public validate(): void {
         if (!this.email || !this.password) {

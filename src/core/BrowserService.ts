@@ -1,7 +1,7 @@
 import type { Browser, Page } from "puppeteer";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import { Logger } from "./Logger";
+import type { ILogger } from "./Logger";
 
 puppeteer.use(StealthPlugin());
 
@@ -14,7 +14,10 @@ export interface BrowserOptions {
 export class BrowserService {
     private browser: Browser | null = null;
 
-    constructor(private options: BrowserOptions = {}) {}
+    constructor(
+        private readonly logger: ILogger,
+        private options: BrowserOptions = {},
+    ) {}
 
     async init(): Promise<Browser> {
         if (this.browser) return this.browser;
@@ -30,7 +33,7 @@ export class BrowserService {
         ];
 
         if (this.options.proxy) {
-            Logger.info(`Using Proxy: ${this.options.proxy}`);
+            this.logger.info(`Using Proxy: ${this.options.proxy}`);
             args.push(`--proxy-server=${this.options.proxy}`);
             args.push("--ignore-certificate-errors");
         }
@@ -45,7 +48,7 @@ export class BrowserService {
             },
         })) as unknown as Browser;
 
-        Logger.info("Browser initialized.");
+        this.logger.info("Browser initialized.");
         return this.browser;
     }
 
@@ -63,7 +66,7 @@ export class BrowserService {
         if (this.browser) {
             await this.browser.close();
             this.browser = null;
-            Logger.info("Browser closed.");
+            this.logger.info("Browser closed.");
         }
     }
 

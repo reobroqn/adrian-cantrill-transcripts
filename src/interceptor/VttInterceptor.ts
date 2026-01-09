@@ -1,14 +1,15 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import type { HTTPResponse } from "puppeteer";
-import { ConfigService } from "../core/ConfigService";
-import { Logger } from "../core/Logger";
+import type { ConfigService } from "../core/ConfigService";
+import type { ILogger } from "../core/Logger";
 import { extractVideoIdAndFilename } from "../transcript/helpers";
 
 export class VttInterceptor {
-    private readonly config = ConfigService.getInstance();
-
-    constructor() {
+    constructor(
+        private readonly config: ConfigService,
+        private readonly logger: ILogger,
+    ) {
         fs.mkdirSync(this.config.vttDir, { recursive: true });
     }
 
@@ -38,9 +39,9 @@ export class VttInterceptor {
             const vttContent = await response.text();
             fs.writeFileSync(outputFilename, vttContent, "utf-8");
 
-            Logger.debug(`Saved VTT segment: ${videoId} -> ${filename}`);
+            this.logger.debug(`Saved VTT segment: ${videoId} -> ${filename}`);
         } catch (error) {
-            Logger.error(`Error intercepting VTT: ${error}`);
+            this.logger.error(`Error intercepting VTT: ${error}`);
         }
     }
 }
