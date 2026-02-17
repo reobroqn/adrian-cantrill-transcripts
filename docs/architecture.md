@@ -1,75 +1,69 @@
 # Project Architecture
 
-This diagram illustrates the high-fidelity, modular service-oriented architecture of the Adrian Cantrill Transcript Automation project. It highlights the separation of infrastructure, platform adaptation, domain orchestration, and data processing.
+This diagram illustrates the simplified, flat module architecture of the Adrian Cantrill Transcript Automation project. The architecture has been flattened from a service-oriented design to a collection of straightforward, functional modules.
 
 ```mermaid
 flowchart TD
     %% Global Styles
-    classDef infra fill:#2d3436,stroke:#00cec9,stroke-width:2px,color:#fff,rx:10,ry:10
-    classDef domain fill:#2d3436,stroke:#a29bfe,stroke-width:2px,color:#fff,rx:10,ry:10
-    classDef platform fill:#2d3436,stroke:#fab1a0,stroke-width:2px,color:#fff,rx:10,ry:10
-    classDef logic fill:#2d3436,stroke:#ffeaa7,stroke-width:2px,color:#fff,rx:10,ry:10
+    classDef entry fill:#2d3436,stroke:#a29bfe,stroke-width:2px,color:#fff,rx:10,ry:10
+    classDef module fill:#2d3436,stroke:#ffeaa7,stroke-width:2px,color:#fff,rx:10,ry:10
+    classDef utility fill:#2d3436,stroke:#00cec9,stroke-width:2px,color:#fff,rx:10,ry:10
     classDef data fill:#2d3436,stroke:#55efc4,stroke-width:2px,color:#fff,shape:cylinder
 
-    subgraph Layer1 [1. INFRASTRUCTURE & CORE]
+    subgraph Entrypoints [SRC / ENTRYPOINTS]
         direction LR
-        ConfigService["fa:fa-gear ConfigService"]:::infra
-        BrowserService["fa:fa-globe BrowserService"]:::infra
-        Logger["fa:fa-terminal Logger"]:::infra
+        Scrape["fa:fa-magnifying-glass scrape.ts"]:::entry
+        Play["fa:fa-play-circle play.ts"]:::entry
     end
 
-    subgraph Layer2 [2. PLATFORM ADAPTATION]
+    subgraph Logic [HELPERS / FUNCTIONAL]
         direction TB
-        IPlatform["fa:fa-object-group IPlatform (Interface)"]:::platform
-        TeachablePlatform["fa:fa-school TeachablePlatform"]:::platform
-        TeachablePlatform -- implements --> IPlatform
+        Teachable["fa:fa-school teachable.ts"]:::module
+        Player["fa:fa-video player.ts"]:::module
+        VTT["fa:fa-file-lines vtt.ts"]:::module
     end
 
-    subgraph Layer3 [3. AUTOMATION & ORCHESTRATION]
-        direction TB
-        AutomationCoordinator["fa:fa-microchip AutomationCoordinator"]:::domain
-        VideoPlayerController["fa:fa-play-circle VideoPlayerController"]:::domain
-    end
-
-    subgraph Layer4 [4. INTERCEPTION & PARSING]
+    subgraph Core [HELPERS / CORE & UTILITY]
         direction LR
-        VttInterceptor["fa:fa-filter VttInterceptor"]:::logic
-        VttParser["fa:fa-file-lines VttParser"]:::logic
+        Browser["fa:fa-globe browser.ts"]:::utility
+        Config["fa:fa-gear config.ts"]:::utility
+        Logger["fa:fa-terminal logger.ts"]:::utility
+        Types["fa:fa-code types.ts"]:::utility
     end
 
-    subgraph DB [DATA STORAGE]
+    subgraph Storage [DATA STORAGE]
         Files[("fa:fa-database JSON Manifests<br/>VTT Segments<br/>Final Transcripts")]:::data
     end
 
-    %% Dependencies & Flows
-    AutomationCoordinator ==> Layer1
-    AutomationCoordinator ==> Layer2
-     AutomationCoordinator ==> VideoPlayerController
-    
-    VideoPlayerController -.-> BrowserService
-    
-    AutomationCoordinator --> VttInterceptor
-    AutomationCoordinator --> VttParser
+    %% Execution Flows
+    Scrape ==> Browser
+    Scrape ==> Teachable
+    Scrape --> Files
 
-    VttInterceptor -- captures --> Files
-    VttParser -- generates --> Files
-    ConfigService -- manages --> Files
+    Play ==> Browser
+    Play ==> Teachable
+    Play ==> Player
+    Play ==> VTT
+    
+    Teachable -.-> Config
+    Player -.-> Logger
+    VTT -.-> Files
+    VTT -.-> Config
 
     %% Link Styling
     linkStyle default stroke:#636e72,stroke-width:1px,fill:none
-    linkStyle 0,1,2,3 stroke:#a29bfe,stroke-width:3px
-    linkStyle 7,8 stroke:#55efc4,stroke-width:2px
+    linkStyle 0,1,3,4,5,6 stroke:#a29bfe,stroke-width:3px
+    linkStyle 2,9,10 stroke:#55efc4,stroke-width:2px
 
     %% Subgraph Styling
-    style Layer1 fill:#1e272e,stroke:#00cec9,stroke-dasharray: 5 5
-    style Layer2 fill:#1e272e,stroke:#fab1a0,stroke-dasharray: 5 5
-    style Layer3 fill:#1e272e,stroke:#a29bfe,stroke-width:3px
-    style Layer4 fill:#1e272e,stroke:#ffeaa7,stroke-dasharray: 5 5
-    style DB fill:#1e272e,stroke:#55efc4,stroke-width:2px
+    style Entrypoints fill:#1e272e,stroke:#a29bfe,stroke-width:3px
+    style Logic fill:#1e272e,stroke:#ffeaa7,stroke-dasharray: 5 5
+    style Core fill:#1e272e,stroke:#00cec9,stroke-dasharray: 5 5
+    style Storage fill:#1e272e,stroke:#55efc4,stroke-width:2px
 ```
 
-### Layer Breakdown
-- **Infrastructure**: Low-level services for config, browser management, and logging.
-- **Platform Adaptation**: Abstract interfaces and implementations for specific course platforms.
-- **Automation & Orchestration**: High-level controllers that drive the browser and coordinate workflows.
-- **Interception & Parsing**: Specialized logic for network traffic analysis and WebVTT data cleanup.
+### Module Breakdown
+- **Entrypoints**: The primary CLI scripts (`scrape.ts` and `play.ts`) that orchestrate the automation workflows.
+- **Functional Modules**: Grouped logic for platform interaction (`teachable.ts`), video player manipulation (`player.ts`), and VTT segment processing (`vtt.ts`).
+- **Core & Utilities**: Shared infrastructure including browser lifecycle management, configuration object, logging, and common TypeScript types.
+- **Data Storage**: Local filesystem storage for course metadata (`data/course_manifest.json`), captured segments, and processed transcripts.

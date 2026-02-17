@@ -1,29 +1,19 @@
-# Adrian Cantrill Transcript Automation - Project Overview
+## 🏗️ Simplified Architecture
 
-This project is a TypeScript-based automation tool designed to extract and process transcripts from Adrian Cantrill's AWS courses.
+The codebase follows a flat, functional module structure with entrypoints in `src/` and helpers in `src/helpers/`:
 
-## 🏗️ Refactored Architecture
+### Entrypoints
+- **`src/scrape.ts`**: CLI entrypoint for scraping course manifests (`npm run scrape`).
+- **`src/play.ts`**: CLI entrypoint for playing videos and generating transcripts (`npm run play`).
 
-The codebase follows a clean, service-oriented architecture:
-
-### 1. Core Services (`src/core/`)
-- **`ConfigService.ts`**: Centralized configuration management (ENV variables, file paths).
-- **`BrowserService.ts`**: Manages Puppeteer browser lifecycle and page creation.
-- **`Logger.ts`**: Consistent logging system across the application.
-
-### 2. Platform Layer (`src/platform/`)
-- **`IPlatform.ts`**: Interface for course platforms (login, scraping).
-- **`TeachablePlatform.ts`**: Implementation for Adrian Cantrill's course site.
-
-### 3. Automator Logic (`src/automator/`)
-- **`AutomationCoordinator.ts`**: The main orchestrator that binds platforms, browser, and processing.
-- **`VideoPlayerController.ts`**: Encapsulates low-level video interactions (play, mute, wait for end).
-- **`Player.ts`**: Entry point for playing videos and capturing transcripts.
-- **`Scraper.ts`**: Entry point for scraping course manifests.
-
-### 4. Processing Layer
-- **`src/interceptor/VttInterceptor.ts`**: Captures VTT segments from network traffic.
-- **`src/transcript/VttParser.ts`**: Parses raw VTT files into clean text transcripts.
+### Supporting Modules (`src/helpers/`)
+- **`config.ts`**: Plain exported configuration object (ENV variables, file paths).
+- **`logger.ts`**: Simple logging utilities.
+- **`types.ts`**: Shared TypeScript interfaces (Lecture, Section, Manifest, VttSegment).
+- **`browser.ts`**: Functions for launching Puppeteer, creating pages, and closing browser.
+- **`teachable.ts`**: Functions for Teachable platform (login, isLoggedIn, scrapeCourse).
+- **`player.ts`**: Functions for video control (findVideoFrame, ensurePlaying, waitForFinished).
+- **`vtt.ts`**: VTT interception, parsing, and transcript generation.
 
 ## 🚀 Workflows
 
@@ -31,5 +21,6 @@ The codebase follows a clean, service-oriented architecture:
 - **Capture Transcripts**: `npm run play` (use `--batch-size` or `--session` for specific targets).
 
 ## 🛠️ Dev Notes
-- **Extensibility**: To support a new platform, implement the `IPlatform` interface and register it in the coordinator.
-- **Validation**: Environment variables are validated on startup via `ConfigService`.
+- **No Classes**: All modules export plain functions — no singletons, no coordinators, no interfaces.
+- **Structure**: High-level orchestration in the entrypoints, all reusable logic in `helpers/`.
+- **Validation**: Environment variables are validated via `validateConfig()` in `config.ts`.

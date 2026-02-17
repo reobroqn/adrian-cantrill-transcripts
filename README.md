@@ -4,11 +4,12 @@ This project automates the generation of transcripts for Adrian Cantrill's AWS c
 
 ## 🏗️ Architecture Overview
 
-The project follows a clean, modular TypeScript architecture:
-- **Core Services**: Centralized management of configuration, browser lifecycle, and logging.
-- **Platform Abstraction**: Isolated logic for specifically targeting the Teachable platform.
-- **Automation Logic**: A coordinator-based approach to orchestrate scraping and playback.
-- **Processing**: Real-time interception of VTT segments and post-processing into clean transcripts.
+The project follows a simple, flat module structure:
+- **Configuration & Logging**: Plain exported objects for config and logging.
+- **Browser Automation**: Functions for launching Puppeteer and managing pages.
+- **Platform Integration**: Functions for Teachable login and course scraping.
+- **Video Control**: Functions for finding video frames and controlling playback.
+- **VTT Processing**: Network interception, parsing, and transcript generation.
 
 ## 🚀 Setup & Usage
 
@@ -57,11 +58,16 @@ npm run dev -- --batch-size 1
 ```
 
 ## 📂 Project Structure
-- `src/core/`: Infrastructure (Config, Browser, Logger).
-- `src/platform/`: Platform implementations (Teachable).
-- `src/automator/`: Coordination and Playback control.
-- `src/interceptor/`: Network traffic capture.
-- `src/transcript/`: VTT parsing and text processing.
+- `src/scrape.ts`: Entrypoint for scraping course manifest.
+- `src/play.ts`: Entrypoint for playing videos and generating transcripts.
+- `src/helpers/`: Supporting logic and utilities.
+    - `browser.ts`: Browser lifecycle management.
+    - `teachable.ts`: Teachable platform logic.
+    - `player.ts`: Video player control.
+    - `vtt.ts`: VTT interception and processing.
+    - `config.ts`: Configuration object.
+    - `logger.ts`: Logging utilities.
+    - `types.ts`: Shared TypeScript interfaces.
 - `data/`: Storage for manifests, raw segments, and final transcripts.
 
 ## 🛠️ Tech Stack
