@@ -1,65 +1,45 @@
 # Adrian Cantrill Transcript Automation
 
-This project automates the generation of transcripts for Adrian Cantrill's AWS courses by scraping lecture metadata, playing videos to extract VTT links, and converting them to text.
+A streamlined automation tool designed to extract high-quality text transcripts from Adrian Cantrill's AWS courses. It handles everything from scraping course structures to automating video playback and processing subtitle streams into clean prose.
 
-## Project Structure
+## 🚀 Quickstart
 
-The project is split into two main components:
+1.  **Configure**: Create a `.env` file based on `.env.example` with your credentials.
+2.  **Install**: `npm install`
+3.  **Scrape**: `npm run scrape` (Generates the course structure)
+4.  **Play**: `npm run play -- --batch-size 5` (Plays videos to capture transcripts)
+5.  **Convert**: `npm run convert` (Batch processes captured segments into text)
 
--   **`puppeteer/`**: Node.js/TypeScript automation scripts.
-    -   Handles login to Teachable.
-    -   Scrapes course structure (`sections` -> `lectures`).
-    -   Plays videos in a headless browser to trigger network requests.
-    -   Intercepts VTT/HLS stream URLs.
--   **`fastapi/`**: Python scripts for transcript processing (and optional proxy/API).
-    -   `mitm_addon.py`: Intercepts VTT segments (used with `mitmproxy`).
-    -   `make_transcripts.py`: Converts captured VTT data into clean text transcripts.
+## 🛠️ Setup
 
-## Setup & Usage
+### Prerequisites
+- **Node.js**: v20+
+- **Teachable Account**: Enrolled in an Adrian Cantrill course.
 
-### 1. Prerequisites
--   Node.js (v18+)
--   Python (v3.10+)
--   `mitmproxy` installed and running.
-
-### 2. Configuration
-Create a `.env` file in `puppeteer/` with:
+### Environment Variables
+Create a `.env` file in the root:
 ```env
 EMAIL=your_email@example.com
 PASSWORD=your_password
 COURSE_ID=1820301
 ```
 
-### 3. Running
+## 📖 Entry Points
 
-#### Step 0: Start Proxy
-Start `mitmweb` to capture traffic:
-```bash
-mitmweb -s fastapi/src/mitm_addon.py
-```
+| Command | Description |
+| :--- | :--- |
+| `npm run scrape` | Logs in and saves the course curriculum to `data/course_manifest.json`. |
+| `npm run play` | Orchestrates the browser to play videos and capture VTT subtitle segments. |
+| `npm run convert` | A "browserless" utility to process already captured VTT segments into final text files. |
+| `npm run dev` | Runs the `play` script in non-headless mode for debugging. |
 
-#### Step 1: Scrape Course Structure
-Extracts all sections and lecture URLs to `puppeteer/data/course_manifest.json`.
-```bash
-cd puppeteer
-npm run scrape
-```
+## ⚙️ Advanced Play Options
+- `--batch-size <n>`: Stop after processing `n` lectures.
+- `--session "<name>"`: Process only lectures within a specific section.
+- `--debug`: Open the browser window to see the automation in action.
 
-#### Step 2: Play & Generate Transcripts
-Iterates through the manifest, plays videos, extracts IDs, and calls the Python script to generate transcripts in `puppeteer/transcripts/`.
-
-**Play a batch of videos:**
-```bash
-cd puppeteer
-npm run play -- --batch-size 5
-```
-
-**Play a specific section (Session):**
-```bash
-cd puppeteer
-npm run play -- --session "INTRODUCTION & SCENARIO"
-```
-
-## Output
-Transcripts are saved in:
-`puppeteer/transcripts/<Section Name>/<Lecture Name>.txt`
+## 📄 Documentation
+For deeper details on how this project works, check the `docs/` folder:
+- [Technology Stack](./docs/technology_stack.md)
+- [Component Overview](./docs/component_overview.md)
+- [Logic Flow](./docs/logic_flow.md)

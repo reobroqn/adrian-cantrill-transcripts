@@ -1,0 +1,39 @@
+{
+    "name": "adrian-transcript-automation",
+    "version": "1.0.0",
+    "description": "Modular TypeScript automation for extracting and processing Adrian Cantrill course transcripts using Puppeteer and a service-oriented architecture",
+    "main": "dist/play.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "npm run play",
+        "dev": "node --env-file=.env -r ts-node/register src/play.ts --debug",
+        "scrape": "node --env-file=.env -r ts-node/register src/scrape.ts",
+        "play": "node --env-file=.env -r ts-node/register src/play.ts",
+        "convert": "node --env-file=.env -r ts-node/register src/convert.ts",
+        "lint": "biome check src",
+        "lint:fix": "biome check --write --unsafe src",
+        "format": "biome format --write src"
+    },
+    "dependencies": {
+        "glob": "^10.3.10",
+        "puppeteer": "^24.33.0",
+        "puppeteer-extra": "^3.3.6",
+        "puppeteer-extra-plugin-stealth": "^2.11.2"
+    },
+    "keywords": [
+        "automation",
+        "transcript",
+        "puppeteer"
+    ],
+    "author": "",
+    "license": "MIT",
+    "type": "commonjs",
+    "devDependencies": {
+        "@biomejs/biome": "2.3.10",
+        "@types/glob": "^8.1.0",
+        "@types/node": "^25.0.2",
+        "@types/puppeteer": "^5.4.7",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3"
+    }
+}
