@@ -1,77 +1,45 @@
 # Adrian Cantrill Transcript Automation
 
-This project automates the generation of transcripts for Adrian Cantrill's AWS courses by scraping lecture metadata, playing videos to extract VTT links, and converting them to clean text.
+A streamlined automation tool designed to extract high-quality text transcripts from Adrian Cantrill's AWS courses. It handles everything from scraping course structures to automating video playback and processing subtitle streams into clean prose.
 
-## 🏗️ Architecture Overview
+## 🚀 Quickstart
 
-The project follows a simple, flat module structure:
-- **Configuration & Logging**: Plain exported objects for config and logging.
-- **Browser Automation**: Functions for launching Puppeteer and managing pages.
-- **Platform Integration**: Functions for Teachable login and course scraping.
-- **Video Control**: Functions for finding video frames and controlling playback.
-- **VTT Processing**: Network interception, parsing, and transcript generation.
+1.  **Configure**: Create a `.env` file based on `.env.example` with your credentials.
+2.  **Install**: `npm install`
+3.  **Scrape**: `npm run scrape` (Generates the course structure)
+4.  **Play**: `npm run play -- --batch-size 5` (Plays videos to capture transcripts)
+5.  **Convert**: `npm run convert` (Batch processes captured segments into text)
 
-## 🚀 Setup & Usage
+## 🛠️ Setup
 
-### 1. Prerequisites
-- **Node.js**: v20+ recommended.
-- **NPM**: Latest version.
+### Prerequisites
+- **Node.js**: v20+
+- **Teachable Account**: Enrolled in an Adrian Cantrill course.
 
-### 2. Configuration
-Create a `.env` file in the root directory:
+### Environment Variables
+Create a `.env` file in the root:
 ```env
 EMAIL=your_email@example.com
 PASSWORD=your_password
 COURSE_ID=1820301
-# OPTIONAL: PROXY=http://user:pass@host:port
 ```
 
-### 3. Installation
-```bash
-npm install
-```
+## 📖 Entry Points
 
-### 4. Running the Automation
+| Command | Description |
+| :--- | :--- |
+| `npm run scrape` | Logs in and saves the course curriculum to `data/course_manifest.json`. |
+| `npm run play` | Orchestrates the browser to play videos and capture VTT subtitle segments. |
+| `npm run convert` | A "browserless" utility to process already captured VTT segments into final text files. |
+| `npm run dev` | Runs the `play` script in non-headless mode for debugging. |
 
-#### Step 1: Scrape Course Manifest
-Extracts all sections and lecture URLs to `data/course_manifest.json`.
-```bash
-npm run scrape
-```
+## ⚙️ Advanced Play Options
+- `--batch-size <n>`: Stop after processing `n` lectures.
+- `--session "<name>"`: Process only lectures within a specific section.
+- `--debug`: Open the browser window to see the automation in action.
 
-#### Step 2: Play & Generate Transcripts
-Iterates through the manifest, plays videos to trigger VTT requests, and generates text files in `data/transcripts/`.
-
-**Play a batch of videos:**
-```bash
-npm run play -- --batch-size 5
-```
-
-**Play a specific section (Session):**
-```bash
-npm run play -- --session "INTRODUCTION & SCENARIO"
-```
-
-**Debug Mode (Visual Browser):**
-```bash
-npm run dev -- --batch-size 1
-```
-
-## 📂 Project Structure
-- `src/scrape.ts`: Entrypoint for scraping course manifest.
-- `src/play.ts`: Entrypoint for playing videos and generating transcripts.
-- `src/helpers/`: Supporting logic and utilities.
-    - `browser.ts`: Browser lifecycle management.
-    - `teachable.ts`: Teachable platform logic.
-    - `player.ts`: Video player control.
-    - `vtt.ts`: VTT interception and processing.
-    - `config.ts`: Configuration object.
-    - `logger.ts`: Logging utilities.
-    - `types.ts`: Shared TypeScript interfaces.
-- `data/`: Storage for manifests, raw segments, and final transcripts.
-
-## 🛠️ Tech Stack
-- **TypeScript**: Type-safe development.
-- **Puppeteer**: Browser automation.
-- **Biome**: Ultra-fast linting and formatting.
-- **ts-node**: Seamless execution of TypeScript files.
+## 📄 Documentation
+For deeper details on how this project works, check the `docs/` folder:
+- [Technology Stack](./docs/technology_stack.md)
+- [Component Overview](./docs/component_overview.md)
+- [Logic Flow](./docs/logic_flow.md)
