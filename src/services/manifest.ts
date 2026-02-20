@@ -23,10 +23,20 @@ export function buildLectureQueue(
     let queue: QueueItem[] = [];
 
     if (options.session) {
-        const target = options.session.toLowerCase();
-        const section = manifest.sections.find((s) =>
-            s.section_title.toLowerCase().includes(target),
-        );
+        let section;
+        const index = parseInt(options.session, 10);
+
+        if (!isNaN(index)) {
+            // Numeric index (1-based)
+            section = manifest.sections[index - 1];
+        } else {
+            // Fuzzy string search
+            const target = options.session.toLowerCase();
+            section = manifest.sections.find((s) =>
+                s.section_title.toLowerCase().includes(target),
+            );
+        }
+
         if (section) {
             section.lectures.forEach((l) => {
                 queue.push({ section: section.section_title, lecture: l });
@@ -38,7 +48,7 @@ export function buildLectureQueue(
                 queue.push({ section: s.section_title, lecture: l });
             });
         });
-        const batchSize = options.batchSize || 1;
+        const batchSize = options.batchSize || 10;
         queue = queue.slice(0, batchSize);
     }
 

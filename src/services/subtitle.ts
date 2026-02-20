@@ -11,12 +11,13 @@ import { Logger } from "../core/logger";
 /**
  * Interacts with the Hotmart player iframe to select English subtitles.
  * Must be called after `player.ensurePlaying()` so the player is initialised.
+ * Emits a single INFO line on success or WARN on any failure.
  */
 export async function selectEnglishSubtitles(page: Page): Promise<void> {
     const frames = page.frames();
     const frame = frames.find((f) => f.url().includes("hotmart"));
     if (!frame) {
-        Logger.warn("[subtitle] Hotmart player frame not found — skipping.");
+        Logger.warn("[subtitle] Hotmart frame not found — skipping.");
         return;
     }
 
@@ -26,7 +27,7 @@ export async function selectEnglishSubtitles(page: Page): Promise<void> {
         if (video) await video.hover();
         await new Promise((r) => setTimeout(r, 1000));
 
-        // Step 1 — open subtitle menu (click via JS to bypass visibility check)
+        // Step 1 — open subtitle menu
         await frame.waitForSelector('[data-testid="subtitle-settings-button"]', {
             timeout: 10000,
         });
@@ -34,17 +35,13 @@ export async function selectEnglishSubtitles(page: Page): Promise<void> {
             const btn = document.querySelector(
                 '[data-testid="subtitle-settings-button"]',
             ) as HTMLElement | null;
-            if (btn) {
-                btn.click();
-                return true;
-            }
+            if (btn) { btn.click(); return true; }
             return false;
         });
         if (!opened) {
-            Logger.warn("[subtitle] Subtitle button not found in DOM.");
+            Logger.warn("[subtitle] Subtitle button not found — skipping.");
             return;
         }
-        Logger.info("[subtitle] Opened subtitle menu.");
         await new Promise((r) => setTimeout(r, 600));
 
         // Step 2 — enable captions if the toggle is currently off
@@ -65,28 +62,23 @@ export async function selectEnglishSubtitles(page: Page): Promise<void> {
                 ) as HTMLElement | undefined;
                 btn?.click();
             });
-            Logger.info("[subtitle] Enabled captions.");
             await new Promise((r) => setTimeout(r, 600));
         }
 
-        // Step 3 — open the Language submenu
+        // Step 3 — open Language submenu
         const langClicked = await frame.evaluate(() => {
             const btn = Array.from(
                 document.querySelectorAll('button[role="menuitem"]'),
             ).find((el) =>
                 el.textContent?.includes("Language"),
             ) as HTMLElement | undefined;
-            if (btn) {
-                btn.click();
-                return true;
-            }
+            if (btn) { btn.click(); return true; }
             return false;
         });
         if (!langClicked) {
-            Logger.warn("[subtitle] Language menu item not found.");
+            Logger.warn("[subtitle] Language menu not found — skipping.");
             return;
         }
-        Logger.info("[subtitle] Opened language list.");
         await new Promise((r) => setTimeout(r, 600));
 
         // Step 4 — click English
@@ -96,19 +88,16 @@ export async function selectEnglishSubtitles(page: Page): Promise<void> {
                     el.getAttribute("aria-label") === "English" ||
                     el.textContent?.trim() === "English",
             ) as HTMLElement | undefined;
-            if (btn) {
-                btn.click();
-                return true;
-            }
+            if (btn) { btn.click(); return true; }
             return false;
         });
 
         if (englishClicked) {
             Logger.info("[subtitle] English subtitles selected ✓");
         } else {
-            Logger.warn("[subtitle] English option not found in language list.");
+            Logger.warn("[subtitle] English option not found in list.");
         }
     } catch (err) {
-        Logger.warn(`[subtitle] Failed to set subtitles via UI: ${err}`);
+        Logger.warn(`[subtitle] Failed: ${err}`);
     }
 }

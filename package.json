@@ -9,7 +9,6 @@
         "dev": "node --env-file=.env -r ts-node/register src/play.ts --debug",
         "scrape": "node --env-file=.env -r ts-node/register src/scrape.ts",
         "play": "node --env-file=.env -r ts-node/register src/play.ts",
-        "convert": "node --env-file=.env -r ts-node/register src/convert.ts",
         "lint": "biome check src",
         "lint:fix": "biome check --write --unsafe src",
         "format": "biome format --write src"

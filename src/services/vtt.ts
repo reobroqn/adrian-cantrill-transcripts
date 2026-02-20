@@ -102,7 +102,7 @@ export async function handleVttResponse(response: HTTPResponse): Promise<void> {
         const vttContent = await response.text();
         fs.writeFileSync(outputFilename, vttContent, "utf-8");
 
-        Logger.info(`Saved VTT segment: ${videoId} -> ${filename}`);
+        Logger.debug(`Saved VTT segment: ${videoId} -> ${filename}`);
     } catch (error) {
         Logger.error(`Error intercepting VTT: ${error}`);
     }

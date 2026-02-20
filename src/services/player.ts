@@ -10,13 +10,25 @@ const SELECTORS = {
     ENDED_CLASS: "vjs-ended",
 };
 
-export async function findVideoFrame(page: Page): Promise<Frame | null> {
-    const frames = page.frames();
-    for (const frame of frames) {
-        const url = frame.url();
-        if (FRAME_URL_PATTERNS.some((pattern) => url.includes(pattern))) {
-            return frame;
+/**
+ * Polls page.frames() until a matching player iframe appears or the timeout
+ * expires. This is necessary because networkidle2 only waits for the outer
+ * page — the Hotmart iframe continues loading asynchronously after that.
+ */
+export async function findVideoFrame(
+    page: Page,
+    timeoutMs = 10_000,
+    intervalMs = 500,
+): Promise<Frame | null> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+        for (const frame of page.frames()) {
+            const url = frame.url();
+            if (FRAME_URL_PATTERNS.some((pattern) => url.includes(pattern))) {
+                return frame;
+            }
         }
+        await new Promise((r) => setTimeout(r, intervalMs));
     }
     return null;
 }
@@ -100,4 +112,3 @@ export async function waitForFinished(
         return false;
     }
 }
-

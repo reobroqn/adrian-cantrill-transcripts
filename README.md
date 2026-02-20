@@ -4,11 +4,10 @@ A streamlined automation tool designed to extract high-quality text transcripts 
 
 ## 🚀 Quickstart
 
-1.  **Configure**: Create a `.env` file based on `.env.example` with your credentials.
-2.  **Install**: `npm install`
-3.  **Scrape**: `npm run scrape` (Generates the course structure)
-4.  **Play**: `npm run play -- --batch-size 5` (Plays videos to capture transcripts)
-5.  **Convert**: `npm run convert` (Batch processes captured segments into text)
+1. **Configure**: Create a `.env` file based on `.env.example` with your credentials.
+2. **Install**: `npm install`
+3. **Scrape**: `npm run scrape` — generates the course manifest
+4. **Play**: `npm run play` — plays videos and captures transcripts
 
 ## 🛠️ Setup
 
@@ -24,22 +23,74 @@ PASSWORD=your_password
 COURSE_ID=1820301
 ```
 
-## 📖 Entry Points
+## 📖 Commands
 
 | Command | Description |
 | :--- | :--- |
 | `npm run scrape` | Logs in and saves the course curriculum to `data/course_manifest.json`. |
-| `npm run play` | Orchestrates the browser to play videos and capture VTT subtitle segments. |
-| `npm run convert` | A "browserless" utility to process already captured VTT segments into final text files. |
-| `npm run dev` | Runs the `play` script in non-headless mode for debugging. |
+| `npm run play` | Orchestrates the browser to play videos and capture VTT subtitle segments into transcripts. |
+| `npm run dev` | Runs the `play` script in non-headless (visible browser) mode for debugging. |
 
-## ⚙️ Advanced Play Options
-- `--batch-size <n>`: Stop after processing `n` lectures.
-- `--session "<name>"`: Process only lectures within a specific section.
-- `--debug`: Open the browser window to see the automation in action.
+---
+
+## ⚙️ `npm run scrape` — Options
+
+| Flag | Description |
+| :--- | :--- |
+| `--debug` | Opens the browser window so you can watch the scraper navigate the course. |
+
+**Examples:**
+```bash
+npm run scrape
+npm run scrape -- --debug
+```
+
+---
+
+## ⚙️ `npm run play` — Options
+
+| Flag | Default | Description |
+| :--- | :---: | :--- |
+| `--batch-size <n>` | `10` | Stop after processing `n` lectures. Useful for running in chunks. |
+| `--session "<name>"` | _(all)_ | Process only lectures within a section whose name contains `<name>`. |
+| `--concurrency <n>` / `-c <n>` | `2` | Number of parallel browser tabs (workers) to run simultaneously. Each worker gets its own isolated browser context seeded with the shared login session. |
+| `--seek` | `false` | Instead of waiting for the full video to play, scrub through in 60-second jumps to collect VTT segments faster. |
+| `--debug` | `false` | Opens the browser window so you can watch the automation in action. |
+
+**Examples:**
+```bash
+# Process 20 lectures using 3 parallel workers
+npm run play -- --batch-size 20 --concurrency 3
+
+# Process only lectures in the "IAM" section, seeking through videos quickly
+npm run play -- --session "IAM" --seek
+
+# Process a single section in debug mode to see what's happening
+npm run play -- --session "S3" --concurrency 1 --debug
+
+# Run everything with maximum concurrency
+npm run play -- --batch-size 100 -c 4 --seek
+```
+
+---
+
+## 📁 Output Structure
+
+```
+data/
+├── course_manifest.json          # Course map produced by scrape
+└── transcripts/
+    ├── 01 - Introduction/
+    │   ├── Welcome to the Course.txt
+    │   └── Course Overview.txt
+    └── 02 - IAM/
+        ├── IAM Basics.txt
+        └── IAM Policies.txt
+```
 
 ## 📄 Documentation
 For deeper details on how this project works, check the `docs/` folder:
 - [Technology Stack](./docs/technology_stack.md)
 - [Component Overview](./docs/component_overview.md)
 - [Logic Flow](./docs/logic_flow.md)
+- [Architecture](./docs/architecture.md)
