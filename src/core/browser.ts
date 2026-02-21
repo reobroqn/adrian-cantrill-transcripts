@@ -26,7 +26,6 @@ export async function launchBrowser(
         "--disable-renderer-backgrounding",
     ];
 
-
     const browser = (await puppeteer.launch({
         headless: options.headless !== false,
         devtools: options.debug,
@@ -55,7 +54,7 @@ export async function closeBrowser(browser: Browser): Promise<void> {
  * Used to capture the session after login and share it with worker contexts.
  */
 export async function extractCookies(page: Page): Promise<CookieParam[]> {
-    const cookies = await page.cookies();
+    const cookies = await page.browserContext().cookies();
     return cookies as CookieParam[];
 }
 
@@ -71,10 +70,13 @@ export async function createWorkerContext(
 ): Promise<BrowserContext> {
     const context = await browser.createBrowserContext();
     const validCookies = cookies.filter(
-        (c): c is CookieParam & { domain: string } => typeof c.domain === "string",
+        (c): c is CookieParam & { domain: string } =>
+            typeof c.domain === "string",
     );
     if (validCookies.length > 0) {
-        await context.setCookie(...validCookies.map((c) => ({ ...c, url: targetUrl })));
+        await context.setCookie(
+            ...validCookies.map((c) => ({ ...c, url: targetUrl })),
+        );
     }
     return context;
 }

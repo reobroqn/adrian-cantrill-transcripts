@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 import { config } from "../core/config";
-import type { Lecture, Manifest } from "../core/types";
+import type { Lecture, Manifest, Section } from "../core/types";
 
 export interface QueueItem {
     section: string;
@@ -23,10 +23,10 @@ export function buildLectureQueue(
     let queue: QueueItem[] = [];
 
     if (options.session) {
-        let section;
+        let section: Section | undefined;
         const index = parseInt(options.session, 10);
 
-        if (!isNaN(index)) {
+        if (!Number.isNaN(index)) {
             // Numeric index (1-based)
             section = manifest.sections[index - 1];
         } else {
@@ -53,4 +53,16 @@ export function buildLectureQueue(
     }
 
     return queue;
+}
+
+/**
+ * Convenience wrapper: loads the manifest from disk and builds the queue
+ * in one call, so entrypoints don't need to know about both steps.
+ */
+export async function buildQueue(options: {
+    session?: string;
+    batchSize?: number;
+}): Promise<QueueItem[]> {
+    const manifest = await loadManifest();
+    return buildLectureQueue(manifest, options);
 }

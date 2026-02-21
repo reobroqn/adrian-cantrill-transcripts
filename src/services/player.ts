@@ -10,10 +10,16 @@ const SELECTORS = {
     ENDED_CLASS: "vjs-ended",
 };
 
+// ============================================================================
+// Public API
+// ============================================================================
+
 /**
- * Polls page.frames() until a matching player iframe appears or the timeout
- * expires. This is necessary because networkidle2 only waits for the outer
- * page — the Hotmart iframe continues loading asynchronously after that.
+ * Polls `page.frames()` until a matching player iframe appears or the timeout
+ * expires. Returns the frame, or `null` if not found within the time limit.
+ *
+ * Polling is necessary because `networkidle2` only waits for the outer page —
+ * the Hotmart/Wistia player iframe continues loading asynchronously after that.
  */
 export async function findVideoFrame(
     page: Page,
@@ -23,8 +29,7 @@ export async function findVideoFrame(
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
         for (const frame of page.frames()) {
-            const url = frame.url();
-            if (FRAME_URL_PATTERNS.some((pattern) => url.includes(pattern))) {
+            if (FRAME_URL_PATTERNS.some((p) => frame.url().includes(p))) {
                 return frame;
             }
         }
@@ -33,6 +38,13 @@ export async function findVideoFrame(
     return null;
 }
 
+/**
+ * Forces the video inside the player iframe to start playing (muted).
+ * If the initial JS play() call fails, falls back to clicking the play button.
+ *
+ * Returns `true` if the player iframe was found and the play command was issued,
+ * `false` if no matching iframe was located within the polling timeout.
+ */
 export async function ensurePlaying(page: Page): Promise<boolean> {
     const frame = await findVideoFrame(page);
     if (!frame) return false;
@@ -45,11 +57,10 @@ export async function ensurePlaying(page: Page): Promise<boolean> {
             if (v) {
                 v.currentTime = 0;
                 v.muted = true;
-                v.play().catch(() => { });
+                v.play().catch(() => {});
             }
         }, SELECTORS);
 
-        // Wait a bit and verify
         await new Promise((r) => setTimeout(r, 2000));
 
         const isPlaying = await frame.evaluate((selectors) => {
@@ -60,7 +71,6 @@ export async function ensurePlaying(page: Page): Promise<boolean> {
         }, SELECTORS);
 
         if (!isPlaying) {
-            // Secondary attempt - click play button
             const playBtn = await frame.$(SELECTORS.PLAY_BUTTON);
             if (playBtn) {
                 await frame.evaluate(
@@ -78,6 +88,13 @@ export async function ensurePlaying(page: Page): Promise<boolean> {
     }
 }
 
+/**
+ * Waits until the video in the player iframe reaches its end state.
+ * Uses `waitForFunction` with a 5-second polling interval rather than a busy loop.
+ *
+ * Returns `true` when the video ends, `false` on timeout (non-fatal — the
+ * caller will proceed to transcript generation with whatever segments were captured).
+ */
 export async function waitForFinished(
     page: Page,
     timeoutMs: number = 3_600_000,
@@ -86,9 +103,6 @@ export async function waitForFinished(
     if (!frame) return false;
 
     try {
-        // Use the browser's native polling instead of a manual while-loop.
-        // waitForFunction re-evaluates the predicate every `polling` ms until
-        // it returns truthy or the timeout is reached.
         await frame.waitForFunction(
             (selectors) => {
                 const v = document.querySelector(
@@ -107,7 +121,6 @@ export async function waitForFinished(
         );
         return true;
     } catch {
-        // waitForFunction throws on timeout — treat as a non-fatal failure
         Logger.warn("waitForFinished: timed out waiting for video to end.");
         return false;
     }

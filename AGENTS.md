@@ -18,9 +18,8 @@ The codebase follows a flat, functional module structure with entrypoints in `sr
 ## 🚀 Workflows
 
 - **Scrape Manifest**: `npm run scrape`
-- **Capture Transcripts**: `npm run play` (use `--batch-size` or `--session` for specific targets).
+- **Capture Transcripts**: `npm run play` (use `--session` for specific targets, and configure `BATCH_SIZE`, `CONCURRENCY`, `SEEK` in `.env`).
 
 ## 🛠️ Dev Notes
 - **No Classes**: All modules export plain functions — no singletons, no coordinators, no interfaces.
 - **Structure**: High-level orchestration in the entrypoints, all reusable logic in `helpers/`.
-- **Validation**: Environment variables are validated via `validateConfig()` in `config.ts`.

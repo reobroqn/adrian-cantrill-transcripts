@@ -1,7 +1,8 @@
-import type { Page } from "puppeteer";
+import type { Browser, CookieParam, Page } from "puppeteer";
+import { createPage, extractCookies } from "../core/browser";
 import { config } from "../core/config";
 import { Logger } from "../core/logger";
-import type { Lecture, Manifest, Section } from "../core/types";
+import type { Manifest, Section } from "../core/types";
 
 const URLS = {
     BASE: "https://learn.cantrill.io/",
@@ -15,55 +16,65 @@ const SELECTORS = {
     SUBMIT: 'input[type="submit"], button[type="submit"], input.btn-primary.button',
     COURSE_SECTION: ".course-section",
     SECTION_TITLE: ".section-title",
-    // Confirmed from live DOM: li.section-item are direct children of ul.section-list
     LECTURE_ITEM: "li.section-item",
     LECTURE_NAME: "span.lecture-name",
 };
 
+// ============================================================================
+// Session management
+// ============================================================================
+
+export interface Session {
+    cookies: CookieParam[];
+    loginUrl: string;
+}
+
+/**
+ * Performs a full login on a temporary page, extracts the resulting session
+ * cookies, and immediately closes the page.
+ *
+ * Returns the cookies and the base URL (`protocol://host`) so worker contexts
+ * can be seeded with the same session without re-authenticating.
+ */
+export async function createSession(browser: Browser): Promise<Session> {
+    const setupPage = await createPage(browser);
+    await ensureLoggedIn(setupPage);
+    const { protocol, host } = new URL(setupPage.url());
+    const loginUrl = `${protocol}//${host}`;
+    const cookies = await extractCookies(setupPage);
+    await setupPage.close();
+    Logger.info(`Session captured (${cookies.length} cookies).`);
+    return { cookies, loginUrl };
+}
+
+// ============================================================================
+// Authentication
+// ============================================================================
+
+/**
+ * Returns `true` when the page's current URL indicates an active session
+ * (i.e. the user was not redirected to a login or sign-in page).
+ */
 export async function isLoggedIn(page: Page): Promise<boolean> {
-    await page.goto(URLS.BASE, {
-        waitUntil: "networkidle2",
-    });
+    await page.goto(URLS.BASE, { waitUntil: "networkidle2" });
     const url = page.url();
     return !url.includes("login") && !url.includes("sign_in");
 }
 
+/**
+ * Fills in `EMAIL` and `PASSWORD` from config and submits the login form.
+ * Returns `true` on success, `false` if the post-submit URL is still a login page.
+ */
 export async function login(page: Page): Promise<boolean> {
     Logger.info("Attempting login to Teachable...");
 
-    await page.goto(URLS.LOGIN, {
-        waitUntil: "networkidle2",
-    });
+    await page.goto(URLS.LOGIN, { waitUntil: "networkidle2" });
+    await new Promise((r) => setTimeout(r, 2000)); // allow autofill to settle
 
-    // Wait for potential autofill
-    await new Promise((r) => setTimeout(r, 2000));
-
-    Logger.info("Filling credentials...");
     await page.waitForSelector(SELECTORS.EMAIL_INPUT, { visible: true });
 
-    await page.evaluate(
-        (email, selector) => {
-            const el = document.querySelector(selector) as HTMLInputElement;
-            if (el) {
-                el.value = email;
-                el.dispatchEvent(new Event("input", { bubbles: true }));
-            }
-        },
-        config.email,
-        SELECTORS.EMAIL_INPUT,
-    );
-
-    await page.evaluate(
-        (password, selector) => {
-            const el = document.querySelector(selector) as HTMLInputElement;
-            if (el) {
-                el.value = password;
-                el.dispatchEvent(new Event("input", { bubbles: true }));
-            }
-        },
-        config.password,
-        SELECTORS.PASSWORD_INPUT,
-    );
+    await fillInput(page, SELECTORS.EMAIL_INPUT, config.email);
+    await fillInput(page, SELECTORS.PASSWORD_INPUT, config.password);
 
     await Promise.all([
         page.waitForNavigation({ waitUntil: "networkidle2" }),
@@ -79,6 +90,10 @@ export async function login(page: Page): Promise<boolean> {
     return false;
 }
 
+/**
+ * Ensures the page has an active session. If not already logged in,
+ * calls `login` and throws if that also fails.
+ */
 export async function ensureLoggedIn(page: Page): Promise<void> {
     if (!(await isLoggedIn(page))) {
         if (!(await login(page))) {
@@ -87,6 +102,14 @@ export async function ensureLoggedIn(page: Page): Promise<void> {
     }
 }
 
+// ============================================================================
+// Course scraping
+// ============================================================================
+
+/**
+ * Navigates to the enrolled course page and scrapes the complete section and
+ * lecture structure from the DOM. Returns a `Manifest` ready to be saved.
+ */
 export async function scrapeCourse(
     page: Page,
     courseId: string,
@@ -97,84 +120,116 @@ export async function scrapeCourse(
     await page.goto(courseUrl, { waitUntil: "networkidle2" });
     await page.waitForSelector(SELECTORS.COURSE_SECTION, { timeout: 10000 });
 
-    const sections = await page.evaluate(
-        (selectors) => {
-            const data: Section[] = [];
-            const sectionContainers = document.querySelectorAll(
-                selectors.COURSE_SECTION,
-            );
+    const sections = await page.evaluate((selectors) => {
+        // ── Inner helpers (run in browser context) ────────────────────────────
 
-            for (const section of Array.from(sectionContainers)) {
-                const titleEl = section.querySelector(selectors.SECTION_TITLE);
+        /** Extracts the human-readable section title from a .section-title node.
+         *  The element contains multiple text nodes (whitespace + title + whitespace),
+         *  so we pick the longest trimmed one. */
+        function extractSectionTitle(titleEl: Element | null): string {
+            if (!titleEl) return "Unknown Section";
+            const longest = Array.from(titleEl.childNodes)
+                .filter((n) => n.nodeType === Node.TEXT_NODE)
+                .map((n) => n.textContent?.trim() ?? "")
+                .reduce((a, b) => (b.length > a.length ? b : a), "");
+            return longest || "Unknown Section";
+        }
 
-                // From live DOM: .section-title has multiple direct text nodes
-                // (surrounding whitespace, the actual title, whitespace).
-                // Pick the longest trimmed node — that's always the real title.
-                const sectionTitle = titleEl
-                    ? Array.from(titleEl.childNodes)
-                        .filter((n) => n.nodeType === Node.TEXT_NODE)
-                        .map((n) => (n.textContent?.trim() ?? ""))
-                        .reduce((a, b) => (b.length > a.length ? b : a), "")
-                    || "Unknown Section"
-                    : "Unknown Section";
-
-                const lectures: Lecture[] = [];
-                const lectureElements = section.querySelectorAll(
-                    selectors.LECTURE_ITEM,
-                );
-
-                for (const item of Array.from(lectureElements)) {
-                    // Confirmed from live DOM: data-lecture-id is on the li element
-                    const lectureId =
-                        item.getAttribute("data-lecture-id") ||
-                        item.getAttribute("data-id") ||
-                        (item as HTMLElement).dataset.lectureId;
-
-                    // Confirmed: the link always has class "item"
-                    const link = item.querySelector("a.item") as HTMLAnchorElement | null;
-                    if (!link) continue;
-
-                    const finalId = lectureId || link.href.split("/").pop() || "";
-                    if (!finalId) continue;
-
-                    // Confirmed: span.lecture-name contains title + duration with
-                    // newlines inside the parens, e.g. "Public Introduction\n  \n    (4:04\n  )"
-                    // On the public/redirect page there is no span.lecture-name — the title
-                    // is a direct text node inside the anchor instead.
-                    const nameEl = link.querySelector(selectors.LECTURE_NAME);
-                    let rawTitle: string;
-                    if (nameEl) {
-                        rawTitle = nameEl.textContent?.trim() || "";
-                    } else {
-                        // Fall back to direct text nodes of the anchor (public page DOM)
-                        rawTitle = Array.from(link.childNodes)
-                            .filter((n) => n.nodeType === Node.TEXT_NODE)
-                            .map((n) => n.textContent?.trim() ?? "")
-                            .reduce((a, b) => (b.length > a.length ? b : a), "");
-                    }
-                    if (!rawTitle) rawTitle = `lecture_${finalId}`;
-
-                    const title = rawTitle
-                        .replace(/\(\d+:\d+[\s\S]*?\)/g, "") // strip duration (may span lines)
-                        .replace(/\s+/g, " ")
-                        .trim();
-
-                    lectures.push({ id: finalId, title, url: link.href });
-                }
-
-                if (lectures.length > 0) {
-                    data.push({ section_title: sectionTitle, lectures });
-                }
+        /** Parses the raw text from `span.lecture-name` or the anchor's direct
+         *  text nodes, then strips the trailing duration `(mm:ss)` annotation. */
+        function extractLectureTitle(
+            link: HTMLAnchorElement,
+            nameEl: Element | null,
+        ): string {
+            let raw: string;
+            if (nameEl) {
+                raw = nameEl.textContent?.trim() ?? "";
+            } else {
+                // Fallback: direct text nodes on the anchor (public/preview pages)
+                raw = Array.from(link.childNodes)
+                    .filter((n) => n.nodeType === Node.TEXT_NODE)
+                    .map((n) => n.textContent?.trim() ?? "")
+                    .reduce((a, b) => (b.length > a.length ? b : a), "");
             }
-            return data;
-        },
-        {
-            COURSE_SECTION: SELECTORS.COURSE_SECTION,
-            SECTION_TITLE: SELECTORS.SECTION_TITLE,
-            LECTURE_ITEM: SELECTORS.LECTURE_ITEM,
-            LECTURE_NAME: SELECTORS.LECTURE_NAME,
-        },
-    );
+            return raw
+                .replace(/\(\d+:\d+[\s\S]*?\)/g, "") // strip duration like "(4:04)"
+                .replace(/\s+/g, " ")
+                .trim();
+        }
 
-    return { course_id: courseId, sections };
+        /** Builds the `Lecture[]` array for a single section container element. */
+        function extractLectures(
+            sectionEl: Element,
+            selectors: { LECTURE_ITEM: string; LECTURE_NAME: string },
+        ): { id: string; title: string; url: string }[] {
+            const lectures: { id: string; title: string; url: string }[] = [];
+            for (const item of Array.from(
+                sectionEl.querySelectorAll(selectors.LECTURE_ITEM),
+            )) {
+                const link = item.querySelector(
+                    "a.item",
+                ) as HTMLAnchorElement | null;
+                if (!link) continue;
+
+                const lectureId =
+                    item.getAttribute("data-lecture-id") ||
+                    item.getAttribute("data-id") ||
+                    (item as HTMLElement).dataset.lectureId ||
+                    link.href.split("/").pop() ||
+                    "";
+                if (!lectureId) continue;
+
+                const title =
+                    extractLectureTitle(
+                        link,
+                        link.querySelector(selectors.LECTURE_NAME),
+                    ) || `lecture_${lectureId}`;
+                lectures.push({ id: lectureId, title, url: link.href });
+            }
+            return lectures;
+        }
+
+        // ── Main DOM walk ──────────────────────────────────────────────────────
+        const data: {
+            section_title: string;
+            lectures: { id: string; title: string; url: string }[];
+        }[] = [];
+
+        for (const sectionEl of Array.from(
+            document.querySelectorAll(selectors.COURSE_SECTION),
+        )) {
+            const section_title = extractSectionTitle(
+                sectionEl.querySelector(selectors.SECTION_TITLE),
+            );
+            const lectures = extractLectures(sectionEl, selectors);
+            if (lectures.length > 0) data.push({ section_title, lectures });
+        }
+
+        return data;
+    }, SELECTORS);
+
+    return { course_id: courseId, sections: sections as Section[] };
+}
+
+// ============================================================================
+// Private helpers
+// ============================================================================
+
+/** Fills an input field via JS and fires an `input` event so React/Vue detect it. */
+async function fillInput(
+    page: Page,
+    selector: string,
+    value: string,
+): Promise<void> {
+    await page.evaluate(
+        (sel, val) => {
+            const el = document.querySelector(sel) as HTMLInputElement | null;
+            if (el) {
+                el.value = val;
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+        },
+        selector,
+        value,
+    );
 }

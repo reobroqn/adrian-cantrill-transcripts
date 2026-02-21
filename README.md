@@ -21,6 +21,9 @@ Create a `.env` file in the root:
 EMAIL=your_email@example.com
 PASSWORD=your_password
 COURSE_ID=1820301
+BATCH_SIZE=10
+CONCURRENCY=4
+SEEK=false
 ```
 
 ## 📖 Commands
@@ -51,25 +54,24 @@ npm run scrape -- --debug
 
 | Flag | Default | Description |
 | :--- | :---: | :--- |
-| `--batch-size <n>` | `10` | Stop after processing `n` lectures. Useful for running in chunks. |
-| `--session "<name>"` | _(all)_ | Process only lectures within a section whose name contains `<name>`. |
-| `--concurrency <n>` / `-c <n>` | `2` | Number of parallel browser tabs (workers) to run simultaneously. Each worker gets its own isolated browser context seeded with the shared login session. |
-| `--seek` | `false` | Instead of waiting for the full video to play, scrub through in 60-second jumps to collect VTT segments faster. |
+| `--session <name\|index>` | _(all)_ | Process only lectures within a matching section. Can be a string search (e.g., `"IAM"`) or a 1-based numerical index (e.g., `2` for the second section). |
 | `--debug` | `false` | Opens the browser window so you can watch the automation in action. |
+
+> **Note:** Configure worker concurrency, batch size limits, and seeking behavior using the `CONCURRENCY`, `BATCH_SIZE`, and `SEEK` variables in your `.env` file.
 
 **Examples:**
 ```bash
-# Process 20 lectures using 3 parallel workers
-npm run play -- --batch-size 20 --concurrency 3
+# Process all lectures using the settings from your .env
+npm run play
 
-# Process only lectures in the "IAM" section, seeking through videos quickly
-npm run play -- --session "IAM" --seek
+# Process only lectures in the "IAM" section (fuzzy string match)
+npm run play -- --session "IAM"
+
+# Process only the 2nd section from the course curriculum (1-based index)
+npm run play -- --session 2
 
 # Process a single section in debug mode to see what's happening
-npm run play -- --session "S3" --concurrency 1 --debug
-
-# Run everything with maximum concurrency
-npm run play -- --batch-size 100 -c 4 --seek
+npm run play -- --session "S3" --debug
 ```
 
 ---

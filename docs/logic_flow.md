@@ -9,7 +9,7 @@ The process starts by authenticating with Teachable. The scraper navigates direc
 When the `play` script runs, it first opens a single setup page, logs in once, and then extracts all session cookies. The setup page is immediately closed. These cookies are passed to every worker so they all share the same authenticated session without sharing a browser context (which would cause tab-focus conflicts).
 
 ## 3. Parallel Worker Pool
-`play.ts` spawns `--concurrency` workers (default: 2). Each worker:
+`play.ts` spawns `CONCURRENCY` workers (default: 4 configured in `.env`). Each worker:
 1. Creates its own isolated **`BrowserContext`** pre-seeded with the login cookies.
 2. Opens a single **`Page`** within that context.
 3. Pulls lectures from a shared queue (`sharedQueue.shift()`) until the queue is empty.
@@ -23,7 +23,7 @@ For each lecture a worker picks up, it follows this sequence:
 2. **Listen**: Attach a network response listener to capture any URL matching `.webvtt`.
 3. **Play**: Locate the video iframe and force it to play (muted) to trigger the HLS stream.
 4. **Configure Subtitles**: Open the player's settings menu and force-select "English" to ensure the correct VTT stream is triggered.
-5. **Seek** _(if `--seek` flag is set)_: Jump through the video in 60-second increments to collect all VTT segments without waiting for real-time playback.
+5. **Seek** _(if `SEEK=true` in `.env`)_: Jump through the video in 60-second increments to collect all VTT segments without waiting for real-time playback.
 6. **Wait**: If not seeking, monitor the video state until it is finished or the timeout is reached.
 
 ## 5. The Interception Mechanism
