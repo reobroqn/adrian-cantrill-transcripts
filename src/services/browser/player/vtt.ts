@@ -1,59 +1,32 @@
-import * as fs from "node:fs";
-import * as path from "node:path";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { glob } from "glob";
-import type { HTTPResponse } from "puppeteer";
-import { config } from "../core/config";
-import { Logger } from "../core/logger";
-import type { VideoIdAndFilename, VttSegment } from "../core/types";
+import type {
+    Lecture,
+    VideoIdAndFilename,
+    VttResponseData,
+    VttSegment,
+} from "../../../types";
+import { checkFileExists, writeFileSafe } from "../../../utils/fs";
+import { Logger } from "../../../utils/logger";
+import { TRANSCRIPTS_DIR, VTT_DIR } from "../constants";
 
 const PATTERNS = {
-    VIDEO_PATH: /\/video\/([^/]+)\/hls\//,
-    VTT_EXTENSION: ".webvtt",
-    HLS_LANG: /textstream_([a-z]{2,3})=/,
     TIME_RANGE_SEPARATOR: " --> ",
     TIMESTAMP: /(\d{2}):(\d{2}):(\d{2})\.(\d{3})/,
     VTT_HEADER_BLOCKS: /^(WEBVTT|X-TIMESTAMP-MAP|NOTE|Kind:|Language:)/,
-    FILENAME_SANITIZE: /[<>:"/\\|?*]/g,
+    VIDEO_PATH: /\/video\/([^/]+)\/hls\//,
+    VTT_EXTENSION: ".webvtt",
+    HLS_LANG: /textstream_([a-z]{2,3})=/,
 };
 
-/**
- * Conjunction words that typically continue a thought rather than starting a
- * new sentence, used by `processSegments` to decide paragraph breaks.
- */
-const CONTINUATION_WORDS = [
-    "And",
-    "But",
-    "Or",
-    "So",
-    "Then",
-    "However",
-    "Therefore",
-];
-
 // ============================================================================
-// Filename utilities
-// ============================================================================
-
-/**
- * Converts any string to a safe filesystem name by collapsing newlines,
- * stripping characters illegal on Windows/POSIX, and trimming whitespace.
- */
-export function sanitizeFilename(raw: string): string {
-    return raw
-        .replace(/[\r\n]+/g, " ")
-        .replace(PATTERNS.FILENAME_SANITIZE, "_")
-        .replace(/\s+/g, " ")
-        .trim();
-}
-
-// ============================================================================
-// Network interception
+// VTT Ingestion (Network)
 // ============================================================================
 
 /**
  * Returns true when an HTTP response is an English-language WebVTT subtitle
- * segment that should be saved. Filters out non-VTT, non-200, and non-English
- * responses early so the heavier processing is only done when needed.
+ * segment that should be saved.
  */
 function isEnglishVttResponse(url: string, status: number): boolean {
     if (!url.includes(PATTERNS.VTT_EXTENSION) || status !== 200) return false;
@@ -63,8 +36,6 @@ function isEnglishVttResponse(url: string, status: number): boolean {
 
 /**
  * Extracts the Hotmart video ID and segment filename from a VTT CDN URL.
- * Returns `{ videoId: null, filename: null }` when the URL doesn't match the
- * expected HLS path structure.
  */
 export function extractVideoIdAndFilename(url: string): VideoIdAndFilename {
     const videoMatch = url.match(PATTERNS.VIDEO_PATH);
@@ -90,45 +61,72 @@ export function extractVideoIdAndFilename(url: string): VideoIdAndFilename {
 }
 
 /**
- * Puppeteer `response` event handler. Saves each new English WebVTT segment
- * to disk under `data/vtt_segments/<videoId>/`. Skips duplicates and
- * non-English or non-200 responses silently.
+ * Normalizes a string for use as a filename by removing illegal characters,
+ * collapsing whitespace, and trimming.
  */
-export async function handleVttResponse(response: HTTPResponse): Promise<void> {
-    const url = response.url();
-    if (!isEnglishVttResponse(url, response.status())) return;
+export function sanitizeFilename(raw: string): string {
+    return raw
+        .replace(/[\r\n]+/g, " ")
+        .replace(/[<>:"/\\|?*]/g, "_")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+/**
+ * Resolves the absolute output path for a lecture transcript.
+ */
+export function getTranscriptPath(section: string, lecture: Lecture): string {
+    const cleanSection = sanitizeFilename(section);
+    const rawTitle =
+        lecture.title && lecture.title !== "Lecture unknown"
+            ? lecture.title
+            : `lecture_${lecture.id}`;
+    const cleanLecture = sanitizeFilename(rawTitle);
+    return join(TRANSCRIPTS_DIR, cleanSection, `${cleanLecture}.txt`);
+}
+
+/**
+ * Saves a new English WebVTT segment to disk.
+ * Returns true if the segment was valid and handled (even if already existing).
+ */
+export async function handleVttResponse(
+    data: VttResponseData,
+): Promise<boolean> {
+    const { url, status } = data;
+    if (!isEnglishVttResponse(url, status)) return false;
 
     try {
         const { videoId, filename } = extractVideoIdAndFilename(url);
-        if (!videoId || !filename) return;
+        if (!videoId || !filename) return false;
 
-        const videoDir = path.join(config.vttDir, videoId);
-        fs.mkdirSync(videoDir, { recursive: true });
+        const videoDir = join(VTT_DIR, videoId);
+        const outputFilename = join(videoDir, `${filename}.txt`);
 
-        const outputFilename = path.join(videoDir, `${filename}.txt`);
-        if (fs.existsSync(outputFilename)) return;
+        if (!(await checkFileExists(outputFilename))) {
+            const vttContent = await data.getContent();
+            await writeFileSafe(outputFilename, vttContent);
+            Logger.debug(`Saved VTT segment: ${videoId} -> ${filename}`);
+        }
 
-        const vttContent = await response.text();
-        fs.writeFileSync(outputFilename, vttContent, "utf-8");
-
-        Logger.debug(`Saved VTT segment: ${videoId} -> ${filename}`);
+        return true;
     } catch (error) {
         Logger.error(`Error intercepting VTT: ${error}`);
+        return false;
     }
 }
 
 // ============================================================================
-// VTT parsing
+// VTT Parsing (Disk)
 // ============================================================================
 
 /**
  * Reads and parses all cue blocks from a single `.txt` VTT file.
  * Skips header lines (WEBVTT, X-TIMESTAMP-MAP, NOTE, Kind, Language).
  */
-function parseVttFile(filePath: string): VttSegment[] {
+async function parseVttFile(filePath: string): Promise<VttSegment[]> {
     const segments: VttSegment[] = [];
     try {
-        const content = fs.readFileSync(filePath, "utf-8");
+        const content = await readFile(filePath, "utf-8");
         const lines = content.trim().split("\n");
 
         let currentBlock: string[] = [];
@@ -193,7 +191,7 @@ function getStartTimeMs(segment: VttSegment): number {
 }
 
 // ============================================================================
-// Transcript generation
+// Transcript Generation
 // ============================================================================
 
 /**
@@ -206,6 +204,16 @@ function processSegments(segments: VttSegment[]): string {
     const result: string[] = [];
     let currentSentence = "";
 
+    const CONTINUATION_WORDS = [
+        "And",
+        "But",
+        "Or",
+        "So",
+        "Then",
+        "However",
+        "Therefore",
+    ];
+
     for (const segment of segments) {
         const content = segment.content.trim();
         if (!content || seen.has(content)) continue;
@@ -216,7 +224,7 @@ function processSegments(segments: VttSegment[]): string {
             const firstChar = content[0];
             const isNewSentence =
                 firstChar === firstChar.toUpperCase() &&
-                ![".", "!", "?", ":", ";"].includes(lastChar);
+                ![".", "!", "?", ":", ";", ","].includes(lastChar);
             const isContinuation = CONTINUATION_WORDS.some((word) =>
                 content.startsWith(`${word} `),
             );
@@ -247,25 +255,26 @@ function processSegments(segments: VttSegment[]): string {
  *
  * Returns `true` on success, `false` if no segments exist or writing fails.
  */
-export async function processVideo(
+export async function processTranscripts(
     videoId: string,
     outputPath: string,
 ): Promise<boolean> {
-    const videoDir = path.join(config.vttDir, videoId);
+    const videoDir = join(VTT_DIR, videoId);
 
-    if (!fs.existsSync(videoDir)) {
-        Logger.error(`No segments found for video: ${videoId}`);
+    if (!(await checkFileExists(videoDir))) {
+        Logger.warn(
+            `processVideo: No segments directory found for video ${videoId}. Skipping.`,
+        );
         return false;
     }
-
     // glob requires forward slashes on Windows
-    const globPattern = path.join(videoDir, "*.txt").replace(/\\/g, "/");
+    const globPattern = join(videoDir, "*.txt").replace(/\\/g, "/");
     const segmentFiles = await glob(globPattern);
     if (segmentFiles.length === 0) return false;
 
-    const allSegments: VttSegment[] = segmentFiles.flatMap((f) =>
-        parseVttFile(f),
-    );
+    const segmentPromises = segmentFiles.map((f) => parseVttFile(f));
+    const allSegments = (await Promise.all(segmentPromises)).flat();
+
     if (allSegments.length === 0) return false;
 
     allSegments.sort((a, b) => getStartTimeMs(a) - getStartTimeMs(b));
@@ -273,8 +282,7 @@ export async function processVideo(
     const processedText = processSegments(allSegments);
 
     try {
-        fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-        fs.writeFileSync(outputPath, processedText, "utf-8");
+        await writeFileSafe(outputPath, processedText);
         return true;
     } catch (error) {
         Logger.error(`Error saving transcript: ${error}`);

@@ -1,83 +1,82 @@
 # Adrian Cantrill Transcript Automation
 
-A streamlined automation tool designed to extract high-quality text transcripts from Adrian Cantrill's AWS courses. It handles everything from scraping course structures to automating video playback and processing subtitle streams into clean prose.
+A TypeScript CLI tool to automate the extraction of transcripts from Adrian Cantrill's courses. It uses Puppeteer to scrape course metadata and a parallel worker pool to process video subtitle segments into consolidated text files.
 
 ## 🚀 Quickstart
 
-1. **Configure**: Create a `.env` file based on `.env.example` with your credentials.
-2. **Install**: `npm install`
-3. **Scrape**: `npm run scrape` — generates the course manifest
-4. **Play**: `npm run play` — plays videos and captures transcripts
+1.  **Clone & Install**:
+    ```bash
+    git clone https://github.com/your-repo/adrian-transcript.git
+    cd adrian-transcript
+    npm install
+    ```
+2.  **Configure**: Copy `.env.example` to `.env` and provide your Teachable credentials and preferences.
+3.  **Run**: Use either the global command or the development script.
 
-## 🛠️ Setup
-
-### Prerequisites
-- **Node.js**: v20+
-- **Teachable Account**: Enrolled in an Adrian Cantrill course.
-
-### Environment Variables
-Create a `.env` file in the root:
-```env
-EMAIL=your_email@example.com
-PASSWORD=your_password
-COURSE_ID=1820301
-BATCH_SIZE=10
-CONCURRENCY=4
-SEEK=false
+### Option A: Global Command
+Install the global command using `npm run setup`.
+You can run the tool from anywhere in the project:
+```bash
+adrian-transcript scrape
+adrian-transcript play
 ```
 
-## 📖 Commands
+### Option B: Development Script
+Alternatively, run the source directly using `npm run dev`:
+```bash
+npm run dev scrape
+npm run dev play
+```
 
-| Command | Description |
+## 🛠️ Configuration
+
+The tool is configured primarily via the `.env` file. Edit it to customize the automation:
+| Variable | Description |
 | :--- | :--- |
-| `npm run scrape` | Logs in and saves the course curriculum to `data/course_manifest.json`. |
-| `npm run play` | Orchestrates the browser to play videos and capture VTT subtitle segments into transcripts. |
-| `npm run dev` | Runs the `play` script in non-headless (visible browser) mode for debugging. |
+| `EMAIL` / `PASSWORD` | Your Teachable credentials. |
+| `COURSE_ID` | The ID from your course URL (e.g., `1820301`). |
+| SESSION | Filter by section title or index (e.g., "IAM" or "1"). Takes priority over `ALL`. |
+| `ALL` | Set to `true` to process the entire manifest (ignored if `SESSION` is set). |
+| `CONCURRENCY` | Number of parallel browser instances (recommended: 4). |
+| `SEEK` | Set to `true` to rapidly seek through videos (fast) or `false` for real-time. |
+| `DIRECT` | Set to `true` to bypass video playback and download VTTs directly from CDN. |
 
----
+## 📖 CLI Reference
 
-## ⚙️ `npm run scrape` — Options
+The CLI is intentionally minimal, with all logic controlled by your environment variables.
+
+### 1. `scrape`
+Scans the course dashboard and saves the structure to `data/course_manifest.json`.
 
 | Flag | Description |
 | :--- | :--- |
-| `--debug` | Opens the browser window so you can watch the scraper navigate the course. |
-
-**Examples:**
-```bash
-npm run scrape
-npm run scrape -- --debug
-```
+| `-d, --debug` | Enable headful mode and DevTools. |
 
 ---
 
-## ⚙️ `npm run play` — Options
+### 2. `play`
+Orchestrates the capture of subtitle streams and generates text transcripts.
 
-| Flag | Default | Description |
-| :--- | :---: | :--- |
-| `--session <name\|index>` | _(all)_ | Process only lectures within a matching section. Can be a string search (e.g., `"IAM"`) or a 1-based numerical index (e.g., `2` for the second section). |
-| `--debug` | `false` | Opens the browser window so you can watch the automation in action. |
+| Flag | Description |
+| :--- | :--- |
+| `-d, --debug` | Enable headful mode for debugging. |
 
-> **Note:** Configure worker concurrency, batch size limits, and seeking behavior using the `CONCURRENCY`, `BATCH_SIZE`, and `SEEK` variables in your `.env` file.
-
-**Examples:**
+**Examples**:
 ```bash
-# Process all lectures using the settings from your .env
-npm run play
+# Process based on .env settings
+adrian-transcript play
 
-# Process only lectures in the "IAM" section (fuzzy string match)
-npm run play -- --session "IAM"
+# Process with direct CDN extraction (fastest)
+adrian-transcript play --direct
 
-# Process only the 2nd section from the course curriculum (1-based index)
-npm run play -- --session 2
-
-# Process a single section in debug mode to see what's happening
-npm run play -- --session "S3" --debug
+# Process with headful browser for debugging
+adrian-transcript play --debug
 ```
 
----
 
 ## 📁 Output Structure
 
+Captured data is organized logically:
 ```
 data/
 ├── course_manifest.json          # Course map produced by scrape
@@ -89,10 +88,3 @@ data/
         ├── IAM Basics.txt
         └── IAM Policies.txt
 ```
-
-## 📄 Documentation
-For deeper details on how this project works, check the `docs/` folder:
-- [Technology Stack](./docs/technology_stack.md)
-- [Component Overview](./docs/component_overview.md)
-- [Logic Flow](./docs/logic_flow.md)
-- [Architecture](./docs/architecture.md)

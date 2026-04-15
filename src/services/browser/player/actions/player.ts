@@ -1,5 +1,5 @@
 import type { Frame, Page } from "puppeteer";
-import { Logger } from "../core/logger";
+import { Logger } from "../../../../utils/logger";
 
 const FRAME_URL_PATTERNS = ["hotmart", "wistia", "player"];
 
@@ -23,7 +23,7 @@ const SELECTORS = {
  */
 export async function findVideoFrame(
     page: Page,
-    timeoutMs = 10_000,
+    timeoutMs = 30_000,
     intervalMs = 500,
 ): Promise<Frame | null> {
     const deadline = Date.now() + timeoutMs;
@@ -50,6 +50,9 @@ export async function ensurePlaying(page: Page): Promise<boolean> {
     if (!frame) return false;
 
     try {
+        // Wait for the actual video element to render inside the iframe
+        await frame.waitForSelector(SELECTORS.VIDEO, { timeout: 15_000 });
+
         await frame.evaluate((selectors) => {
             const v = document.querySelector(
                 selectors.VIDEO,

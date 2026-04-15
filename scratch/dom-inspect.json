@@ -1,0 +1,450 @@
+{
+  "buttonsInfo": [
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Unmute",
+      "title": null,
+      "className": "styles_container__Ni_sp",
+      "id": "",
+      "textContent": "Unmute",
+      "innerHTML": "<div class=\"styles_containerHug__ipP6w\"><div class=\"styles_content__xB_4h\"><div class=\"styles_soundIcon__2Zh6U\"><svg width=\"12\" height=\"18\" viewBox=\"0"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Subtitles",
+      "title": null,
+      "className": "styles_iconButton__9cfMg styles_subtitleToggle__Ui1A_ styles_small__I_BeT",
+      "id": "",
+      "textContent": "",
+      "innerHTML": "<svg data-testid=\"subtitle-icon-small\" width=\"14\" height=\"12\" viewBox=\"0 0 14 12\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"even"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Pause shortcut key k",
+      "title": null,
+      "className": "styles_iconButton__9cfMg styles_desktopButton__vlt61",
+      "id": "",
+      "textContent": "",
+      "innerHTML": "<svg width=\"15\" height=\"20\" viewBox=\"0 0 12 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" data-testid=\"pause-icon\"><path d=\"M0 1a1 1 0 0 1 1-1h2a"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Go back 10 seconds shortcut key ←",
+      "title": null,
+      "className": "styles_iconButton__9cfMg styles_seekTimeControls__ctYCx",
+      "id": "",
+      "textContent": "10",
+      "innerHTML": "<svg width=\"18\" height=\"21\" viewBox=\"0 0 18 21\" fill=\"#fff\" class=\"styles_container__ZP6Uh\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenod"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Go forward 10 seconds shortcut key →",
+      "title": null,
+      "className": "styles_iconButton__9cfMg styles_seekTimeControls__ctYCx",
+      "id": "",
+      "textContent": "10",
+      "innerHTML": "<svg width=\"18\" height=\"21\" viewBox=\"0 0 18 21\" fill=\"#fff\" class=\"styles_container__JPOef\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenod"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Volume",
+      "title": null,
+      "className": "styles_iconButton__9cfMg styles_soundToggle__qvHhS",
+      "id": "",
+      "textContent": "",
+      "innerHTML": "<svg width=\"12\" height=\"18\" viewBox=\"0 0 12 18\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"styles_soundIcon__lMOC4\"><path fill-rule=\"evenod"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Subtitles",
+      "title": null,
+      "className": "styles_iconButton__9cfMg styles_subtitleToggle__Ui1A_ styles_desktopButton__vlt61 styles_subtitleToggle__wgoVw",
+      "id": "",
+      "textContent": "",
+      "innerHTML": "<svg data-testid=\"subtitle-icon-medium\" width=\"22\" height=\"18\" viewBox=\"0 0 22 18\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"eve"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Personal Notes",
+      "title": null,
+      "className": "styles_iconButton__9cfMg",
+      "id": "",
+      "textContent": "",
+      "innerHTML": "<svg width=\"21\" height=\"21\" viewBox=\"0 0 20 20\" fill=\"#fff\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M4.46428 15.5357C4.28571 15.3571 4.24107 15.08"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Settings",
+      "title": null,
+      "className": "styles_iconButton__9cfMg styles_desktopButton__vlt61",
+      "id": "",
+      "textContent": "",
+      "innerHTML": "<svg data-testid=\"settings-icon-medium\" width=\"22\" height=\"20\" viewBox=\"0 0 22 20\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"eve"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Miniplayer",
+      "title": null,
+      "className": "styles_iconButton__9cfMg styles_desktopButton__vlt61 styles_pictureInPictureControl__qAQ_g",
+      "id": "",
+      "textContent": "",
+      "innerHTML": "<svg width=\"1.25rem\" height=\"1.125rem\" viewBox=\"0 0 20 18\" fill=\"#fff\" xmlns=\"http://www.w3.org/2000/svg\" data-testid=\"picture_in_picture_enter\"><path"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": "Full screen shortcut key f",
+      "title": null,
+      "className": "styles_iconButton__9cfMg styles_desktopButton__vlt61",
+      "id": "",
+      "textContent": "",
+      "innerHTML": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"#fff\" data-testid=\"full_screen_enter\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenod"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Play Video",
+      "className": "vjs-big-play-button",
+      "id": "",
+      "textContent": "Play Video",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Play Video</span>"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Pause",
+      "className": "vjs-play-control vjs-control vjs-button vjs-playing",
+      "id": "",
+      "textContent": "Pause",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Pause</span>"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Unmute",
+      "className": "vjs-mute-control vjs-control vjs-button vjs-vol-0",
+      "id": "",
+      "textContent": "Unmute",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Unmute</span>"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Seek to live, currently behind live",
+      "className": "vjs-seek-to-live-control vjs-control",
+      "id": "",
+      "textContent": "Seek to live, currently behind liveLIVE",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Seek to live, currently behind live</sp"
+    },
+    {
+      "tagName": "DIV",
+      "role": null,
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-playback-rate vjs-menu-button vjs-menu-button-popup vjs-control vjs-button vjs-hidden",
+      "id": "",
+      "textContent": "1xPlayback Rate",
+      "innerHTML": "<div class=\"vjs-playback-rate-value\" id=\"vjs-playback-rate-value-label-vjs_video_3_component_273\">1x</div><button class=\"vjs-playback-rate vjs-menu-bu"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Playback Rate",
+      "className": "vjs-playback-rate vjs-menu-button vjs-menu-button-popup vjs-button",
+      "id": "",
+      "textContent": "Playback Rate",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Playback Rate</span>"
+    },
+    {
+      "tagName": "DIV",
+      "role": null,
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-chapters-button vjs-menu-button vjs-menu-button-popup vjs-control vjs-button vjs-hidden",
+      "id": "",
+      "textContent": "ChaptersChapters",
+      "innerHTML": "<button class=\"vjs-chapters-button vjs-menu-button vjs-menu-button-popup vjs-button\" type=\"button\" aria-disabled=\"false\" title=\"Chapters\" aria-haspopu"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Chapters",
+      "className": "vjs-chapters-button vjs-menu-button vjs-menu-button-popup vjs-button",
+      "id": "",
+      "textContent": "Chapters",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Chapters</span>"
+    },
+    {
+      "tagName": "DIV",
+      "role": null,
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-descriptions-button vjs-menu-button vjs-menu-button-popup vjs-control vjs-button vjs-hidden vjs-disabled",
+      "id": "",
+      "textContent": "Descriptionsdescriptions off, selected",
+      "innerHTML": "<button class=\"vjs-descriptions-button vjs-menu-button vjs-menu-button-popup vjs-button vjs-disabled\" type=\"button\" aria-disabled=\"true\" title=\"Descri"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Descriptions",
+      "className": "vjs-descriptions-button vjs-menu-button vjs-menu-button-popup vjs-button vjs-disabled",
+      "id": "",
+      "textContent": "Descriptions",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Descriptions</span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item vjs-selected",
+      "id": "",
+      "textContent": "descriptions off, selected",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">descriptions off</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span>"
+    },
+    {
+      "tagName": "DIV",
+      "role": null,
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-subs-caps-button vjs-menu-button vjs-menu-button-popup vjs-control vjs-button",
+      "id": "",
+      "textContent": "Captionscaptions settings, opens captions settings dialogcaptions offالعربية, selectedEnglishFrançaisहिन्दीEspañol中文 (中国)",
+      "innerHTML": "<button class=\"vjs-subs-caps-button vjs-menu-button vjs-menu-button-popup vjs-button\" type=\"button\" aria-disabled=\"false\" title=\"Captions\" aria-haspop"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Captions",
+      "className": "vjs-subs-caps-button vjs-menu-button vjs-menu-button-popup vjs-button",
+      "id": "",
+      "textContent": "Captions",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Captions</span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitem",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item vjs-texttrack-settings",
+      "id": "",
+      "textContent": "captions settings, opens captions settings dialog",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">captions settings</span><span class=\"vjs-control-text\" aria-live=\"polite\">, opens captions settings dialog</span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item",
+      "id": "",
+      "textContent": "captions off",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">captions off</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item vjs-subtitles-menu-item vjs-selected",
+      "id": "",
+      "textContent": "العربية, selected",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">العربية</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item vjs-subtitles-menu-item",
+      "id": "",
+      "textContent": "English",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">English</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item vjs-subtitles-menu-item",
+      "id": "",
+      "textContent": "Français",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">Français</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item vjs-subtitles-menu-item",
+      "id": "",
+      "textContent": "हिन्दी",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">हिन्दी</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item vjs-subtitles-menu-item",
+      "id": "",
+      "textContent": "Español",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">Español</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item vjs-subtitles-menu-item",
+      "id": "",
+      "textContent": "中文 (中国)",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">中文 (中国)</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span>"
+    },
+    {
+      "tagName": "DIV",
+      "role": null,
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-audio-button vjs-menu-button vjs-menu-button-popup vjs-control vjs-button vjs-hidden",
+      "id": "",
+      "textContent": "Audio Trackaudio, selected",
+      "innerHTML": "<button class=\"vjs-audio-button vjs-menu-button vjs-menu-button-popup vjs-button\" type=\"button\" aria-disabled=\"false\" title=\"Audio Track\" aria-haspopu"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Audio Track",
+      "className": "vjs-audio-button vjs-menu-button vjs-menu-button-popup vjs-button",
+      "id": "",
+      "textContent": "Audio Track",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Audio Track</span>"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-menu-item vjs-selected vjs-main-menu-item",
+      "id": "",
+      "textContent": "audio, selected",
+      "innerHTML": "<span class=\"vjs-menu-item-text\">audio</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span>"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Picture-in-Picture",
+      "className": "vjs-picture-in-picture-control vjs-control vjs-button",
+      "id": "",
+      "textContent": "Picture-in-Picture",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Picture-in-Picture</span>"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Fullscreen",
+      "className": "vjs-fullscreen-control vjs-control vjs-button",
+      "id": "",
+      "textContent": "Fullscreen",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Fullscreen</span>"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "restore all settings to the default values",
+      "className": "vjs-default-button",
+      "id": "",
+      "textContent": "Reset restore all settings to the default values",
+      "innerHTML": "Reset<span class=\"vjs-control-text\"> restore all settings to the default values</span>"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": null,
+      "className": "vjs-done-button",
+      "id": "",
+      "textContent": "Done",
+      "innerHTML": "Done"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": null,
+      "ariaLabel": null,
+      "title": "Close Modal Dialog",
+      "className": "vjs-close-button vjs-control vjs-button",
+      "id": "",
+      "textContent": "Close Modal Dialog",
+      "innerHTML": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Close Modal Dialog</span>"
+    }
+  ],
+  "domSummary": {
+    "hasVideo": true,
+    "videoSrc": "blob:https://player.hotmart.com/74642c65-a123-4568-9697-790c0a618673",
+    "menus": [
+      {
+        "className": "vjs-control-bar",
+        "id": "",
+        "htmlSnippet": "<button class=\"vjs-play-control vjs-control vjs-button vjs-playing\" type=\"button\" title=\"Pause\" aria-disabled=\"false\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Pause</span></button><div class=\"vjs-volume-panel vjs-control vjs-volume-panel-horizontal\"><button class=\"vjs-mute-control vjs-control vjs-button vjs-vol-0\" type=\"button\" title=\"Unmute\" aria-disabled=\"false\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Unmute</span></button><div class=\"vjs-volume-control vjs-control vjs-volume-horizontal\"><div tabindex=\"0\" class=\"vjs-volume-bar vjs-slider-bar vjs-slider vjs-slider-horizontal\" role=\"slider\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-label=\"Volume Level\" aria-live=\"polite\" aria-valuetext=\"0%\"><div class=\"vjs-mouse-display\"><div class=\"vjs-volume-tooltip\" aria-hidden=\"true\"></div></div><div class=\"vjs-volume-level\" style=\"width: 0%;\"><span class=\"vjs-control-text\"></span></div></div></div></div><div class=\"vjs-current-time vjs-time-control vjs-control\"><span class=\"vjs-control-text\" role=\"presentation\">Current Time&nbsp;</span><span class=\"vjs-current-time-display\" aria-live=\"off\" role=\"presentation\">0:07</span></div><div class=\"vjs-time-control vjs-time-divider\" aria-hidden=\"true\"><div><span>/</span></div></div><div class=\"vjs-duration vjs-time-control vjs-control\"><span class=\"vjs-control-text\" role=\"presentation\">Duration&nbsp;</span><span class=\"vjs-duration-display\" aria-live=\"off\" role=\"presentation\">4:04</span></div><div class=\"vjs-progress-control vjs-control\"><div tabindex=\"0\" class=\"vjs-progress-holder vjs-slider vjs-slider-horizontal\" role=\"slider\" aria-valuenow=\"2.89\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-label=\"Progress Bar\" aria-valuetext=\"0:07 of 4:04\"><div class=\"vjs-load-progress\" style=\"width: 19.63%;\"><span class=\"vjs-control-text\"><span>Loaded</span>: <span class=\"vjs-control-text-loaded-percentage\">19.63%</span></span><div data-start=\"0.065963\" data-end=\"47.999999\" style=\"left: 0.14%; width: 99.86%;\"></div></div><div class=\"vjs-mouse-display\"><div class=\"vjs-time-tooltip\" aria-hidden=\"true\"></div></div><div class=\"vjs-play-progress vjs-slider-bar\" aria-hidden=\"true\" style=\"width: 2.89%;\"><div class=\"vjs-time-tooltip\" aria-hidden=\"true\" style=\"right: 0px;\">0:07</div></div></div></div><div class=\"vjs-live-control vjs-control vjs-hidden\"><div class=\"vjs-live-display\" aria-live=\"off\"><span class=\"vjs-control-text\">Stream Type&nbsp;</span>LIVE</div></div><button class=\"vjs-seek-to-live-control vjs-control\" type=\"button\" title=\"Seek to live, currently behind live\" aria-disabled=\"false\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Seek to live, currently behind live</span><span class=\"vjs-seek-to-live-text\" aria-hidden=\"true\">LIVE</span></button><div class=\"vjs-remaining-time vjs-time-control vjs-control\"><span class=\"vjs-control-text\" role=\"presentation\">Remaining Time&nbsp;</span><span aria-hidden=\"true\">-</span><span class=\"vjs-remaining-time-display\" aria-live=\"off\" role=\"presentation\">3:57</span></div><div class=\"vjs-custom-control-spacer vjs-spacer \">&nbsp;</div><div class=\"vjs-playback-rate vjs-menu-button vjs-menu-button-popup vjs-control vjs-button vjs-hidden\"><div class=\"vjs-playback-rate-value\" id=\"vjs-playback-rate-value-label-vjs_video_3_component_273\">1x</div><button class=\"vjs-playback-rate vjs-menu-button vjs-menu-button-popup vjs-button\" type=\"button\" aria-disabled=\"false\" title=\"Playback Rate\" aria-haspopup=\"true\" aria-expanded=\"false\" aria-describedby=\"vjs-playback-rate-value-label-vjs_video_3_component_273\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Playback Rate</span></button><div class=\"vjs-menu\"><ul class=\"vjs-menu-content\" role=\"menu\"></ul></div></div><div class=\"vjs-chapters-button vjs-menu-button vjs-menu-button-popup vjs-control vjs-button vjs-hidden\"><button class=\"vjs-chapters-button vjs-menu-button vjs-menu-button-popup vjs-button\" type=\"button\" aria-disabled=\"false\" title=\"Chapters\" aria-haspopup=\"true\" aria-expanded=\"false\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Chapters</span></button><div class=\"vjs-menu\"><ul class=\"vjs-menu-content\" role=\"menu\"><li class=\"vjs-menu-title\" tabindex=\"-1\">Chapters</li></ul></div></div><div class=\"vjs-descriptions-button vjs-menu-button vjs-menu-button-popup vjs-control vjs-button vjs-hidden vjs-disabled\"><button class=\"vjs-descriptions-button vjs-menu-button vjs-menu-button-popup vjs-button vjs-disabled\" type=\"button\" aria-disabled=\"true\" title=\"Descriptions\" aria-haspopup=\"true\" aria-expanded=\"false\" disabled=\"disabled\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Descriptions</span></button><div class=\"vjs-menu vjs-hidden\"><ul class=\"vjs-menu-content\" role=\"menu\"><li class=\"vjs-menu-item vjs-selected\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"true\"><span class=\"vjs-menu-item-text\">descriptions off</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span></li></ul></div></div><div class=\"vjs-subs-caps-button vjs-menu-button vjs-menu-button-popup vjs-control vjs-button\"><button class=\"vjs-subs-caps-button vjs-menu-button vjs-menu-button-popup vjs-button\" type=\"button\" aria-disabled=\"false\" title=\"Captions\" aria-haspopup=\"true\" aria-expanded=\"false\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Captions</span></button><div class=\"vjs-menu\"><ul class=\"vjs-menu-content\" role=\"menu\"><li class=\"vjs-menu-item vjs-texttrack-settings\" tabindex=\"-1\" role=\"menuitem\" aria-disabled=\"false\"><span class=\"vjs-menu-item-text\">captions settings</span><span class=\"vjs-control-text\" aria-live=\"polite\">, opens captions settings dialog</span></li><li class=\"vjs-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">captions off</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item vjs-selected\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"true\"><span class=\"vjs-menu-item-text\">العربية</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">English</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">Français</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">हिन्दी</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">Español</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">中文 (中国)</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li></ul></div></div><div class=\"vjs-audio-button vjs-menu-button vjs-menu-button-popup vjs-control vjs-button vjs-hidden\"><button class=\"vjs-audio-button vjs-menu-button vjs-menu-button-popup vjs-button\" type=\"button\" aria-disabled=\"false\" title=\"Audio Track\" aria-haspopup=\"true\" aria-expanded=\"false\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Audio Track</span></button><div class=\"vjs-menu\"><ul class=\"vjs-menu-content\" role=\"menu\"><li class=\"vjs-menu-item vjs-selected vjs-main-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"true\"><span class=\"vjs-menu-item-text\">audio</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span></li></ul></div></div><button class=\"vjs-picture-in-picture-control vjs-control vjs-button\" type=\"button\" title=\"Picture-in-Picture\" aria-disabled=\"false\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Picture-in-Picture</span></button><button class=\"vjs-fullscreen-control vjs-control vjs-button\" type=\"button\" title=\"Fullscreen\" aria-disabled=\"false\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Fullscreen</span></button>"
+      },
+      {
+        "className": "vjs-menu",
+        "id": "",
+        "htmlSnippet": "<ul class=\"vjs-menu-content\" role=\"menu\"></ul>"
+      },
+      {
+        "className": "vjs-menu",
+        "id": "",
+        "htmlSnippet": "<ul class=\"vjs-menu-content\" role=\"menu\"><li class=\"vjs-menu-title\" tabindex=\"-1\">Chapters</li></ul>"
+      },
+      {
+        "className": "vjs-menu vjs-hidden",
+        "id": "",
+        "htmlSnippet": "<ul class=\"vjs-menu-content\" role=\"menu\"><li class=\"vjs-menu-item vjs-selected\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"true\"><span class=\"vjs-menu-item-text\">descriptions off</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span></li></ul>"
+      },
+      {
+        "className": "vjs-subs-caps-button vjs-menu-button vjs-menu-button-popup vjs-control vjs-button",
+        "id": "",
+        "htmlSnippet": "<button class=\"vjs-subs-caps-button vjs-menu-button vjs-menu-button-popup vjs-button\" type=\"button\" aria-disabled=\"false\" title=\"Captions\" aria-haspopup=\"true\" aria-expanded=\"false\"><span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Captions</span></button><div class=\"vjs-menu\"><ul class=\"vjs-menu-content\" role=\"menu\"><li class=\"vjs-menu-item vjs-texttrack-settings\" tabindex=\"-1\" role=\"menuitem\" aria-disabled=\"false\"><span class=\"vjs-menu-item-text\">captions settings</span><span class=\"vjs-control-text\" aria-live=\"polite\">, opens captions settings dialog</span></li><li class=\"vjs-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">captions off</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item vjs-selected\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"true\"><span class=\"vjs-menu-item-text\">العربية</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">English</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">Français</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">हिन्दी</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">Español</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">中文 (中国)</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li></ul></div>"
+      },
+      {
+        "className": "vjs-subs-caps-button vjs-menu-button vjs-menu-button-popup vjs-button",
+        "id": "",
+        "htmlSnippet": "<span class=\"vjs-icon-placeholder\" aria-hidden=\"true\"></span><span class=\"vjs-control-text\" aria-live=\"polite\">Captions</span>"
+      },
+      {
+        "className": "vjs-menu",
+        "id": "",
+        "htmlSnippet": "<ul class=\"vjs-menu-content\" role=\"menu\"><li class=\"vjs-menu-item vjs-texttrack-settings\" tabindex=\"-1\" role=\"menuitem\" aria-disabled=\"false\"><span class=\"vjs-menu-item-text\">captions settings</span><span class=\"vjs-control-text\" aria-live=\"polite\">, opens captions settings dialog</span></li><li class=\"vjs-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">captions off</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item vjs-selected\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"true\"><span class=\"vjs-menu-item-text\">العربية</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">English</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">Français</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">हिन्दी</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">Español</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li><li class=\"vjs-menu-item vjs-subtitles-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"false\"><span class=\"vjs-menu-item-text\">中文 (中国)</span><span class=\"vjs-control-text\" aria-live=\"polite\"></span></li></ul>"
+      },
+      {
+        "className": "vjs-menu",
+        "id": "",
+        "htmlSnippet": "<ul class=\"vjs-menu-content\" role=\"menu\"><li class=\"vjs-menu-item vjs-selected vjs-main-menu-item\" tabindex=\"-1\" role=\"menuitemradio\" aria-disabled=\"false\" aria-checked=\"true\"><span class=\"vjs-menu-item-text\">audio</span><span class=\"vjs-control-text\" aria-live=\"polite\">, selected</span></li></ul>"
+      }
+    ]
+  }
+}

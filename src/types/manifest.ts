@@ -13,14 +13,3 @@ export interface Manifest {
     course_id: string;
     sections: Section[];
 }
-
-export interface VideoIdAndFilename {
-    videoId: string | null;
-    filename: string | null;
-}
-
-export interface VttSegment {
-    timeRange: string;
-    content: string;
-    contentId?: string;
-}

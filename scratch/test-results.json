@@ -1,0 +1,127 @@
+{
+  "vjsResult": {
+    "foundEnglish": true,
+    "beforeSelected": "العربية, selected",
+    "afterSelected": "العربية, selected",
+    "activeTrack": null
+  },
+  "customUiResult": {
+    "clickedSubBtn": true
+  },
+  "popupMenu": [
+    {
+      "tagName": "DIV",
+      "role": "menu",
+      "textContent": "Enable caption?LanguageOffStyle",
+      "className": ""
+    },
+    {
+      "tagName": "BUTTON",
+      "role": "menuitem",
+      "textContent": "Enable caption?",
+      "className": "styles_container___vR43"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": "menuitem",
+      "textContent": "LanguageOff",
+      "className": "styles_container___vR43"
+    },
+    {
+      "tagName": "BUTTON",
+      "role": "menuitem",
+      "textContent": "Style",
+      "className": "styles_container___vR43"
+    },
+    {
+      "tagName": "UL",
+      "role": "menu",
+      "textContent": "",
+      "className": "vjs-menu-content"
+    },
+    {
+      "tagName": "UL",
+      "role": "menu",
+      "textContent": "Chapters",
+      "className": "vjs-menu-content"
+    },
+    {
+      "tagName": "UL",
+      "role": "menu",
+      "textContent": "descriptions off, selected",
+      "className": "vjs-menu-content"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "textContent": "descriptions off, selected",
+      "className": "vjs-menu-item vjs-selected"
+    },
+    {
+      "tagName": "UL",
+      "role": "menu",
+      "textContent": "captions settings, opens captions settings dialogcaptions offالعربيةEnglish, selectedFrançaisहिन्दीEspañol中文 (中国)",
+      "className": "vjs-menu-content"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitem",
+      "textContent": "captions settings, opens captions settings dialog",
+      "className": "vjs-menu-item vjs-texttrack-settings"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "textContent": "captions off",
+      "className": "vjs-menu-item"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "textContent": "العربية",
+      "className": "vjs-menu-item vjs-subtitles-menu-item"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "textContent": "English, selected",
+      "className": "vjs-menu-item vjs-subtitles-menu-item vjs-selected"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "textContent": "Français",
+      "className": "vjs-menu-item vjs-subtitles-menu-item"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "textContent": "हिन्दी",
+      "className": "vjs-menu-item vjs-subtitles-menu-item"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "textContent": "Español",
+      "className": "vjs-menu-item vjs-subtitles-menu-item"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "textContent": "中文 (中国)",
+      "className": "vjs-menu-item vjs-subtitles-menu-item"
+    },
+    {
+      "tagName": "UL",
+      "role": "menu",
+      "textContent": "audio, selected",
+      "className": "vjs-menu-content"
+    },
+    {
+      "tagName": "LI",
+      "role": "menuitemradio",
+      "textContent": "audio, selected",
+      "className": "vjs-menu-item vjs-selected vjs-main-menu-item"
+    }
+  ]
+}

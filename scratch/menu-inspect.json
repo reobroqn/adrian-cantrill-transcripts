@@ -1,0 +1,83 @@
+{
+  "step1": {
+    "clicked": true
+  },
+  "mainMenu": [
+    {
+      "textContent": "Enable caption?",
+      "innerHTML": "<div class=\"styles_contentSettingOption__QL_Ci\"><strong>Enable caption?</strong><span></span></div><span class=\"styles_toggleContainer__lcuCA\"><div aria-checked=\"false\" role=\"switch\" class=\"styles_container___KxNw\" data-testid=\"subtitle-toggle\" style=\"height: 0.875rem; width: 1.5rem;\"><div class=\"styles_toggle__Mf_Jy\"></div><div class=\"styles_handle__xnda_\" style=\"width: 0.875rem;\"></div></div></span>",
+      "className": "styles_container___vR43"
+    },
+    {
+      "textContent": "LanguageOff",
+      "innerHTML": "<div class=\"styles_contentSettingOption__QL_Ci\"><strong><svg data-testid=\"subtitle-icon-small\" width=\"14\" height=\"12\" viewBox=\"0 0 14 12\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"styles_subtitleIcon__KP7zU\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M0 2.5C0 1.11929 1.11929 0 2.5 0H11.5C12.8807 0 14 1.11929 14 2.5V9.5C14 10.8807 12.8807 12 11.5 12H2.5C1.11929 12 0 10.8807 0 9.5V2.5ZM2.5 1C1.67157 1 1 1.67157 1 2.5V9.5C1 10.3284 1.67157 11 2.5 11H11.5C12.3284 11 13 10.3284 13 9.5V2.5C13 1.67157 12.3284 1 11.5 1H2.5ZM3 6.5C3 6.22386 3.22386 6 3.5 6H5.5C5.77614 6 6 6.22386 6 6.5C6 6.77614 5.77614 7 5.5 7H3.5C3.22386 7 3 6.77614 3 6.5ZM7 6.5C7 6.22386 7.22386 6 7.5 6H10.5C10.7761 6 11 6.22386 11 6.5C11 6.77614 10.7761 7 10.5 7H7.5C7.22386 7 7 6.77614 7 6.5ZM4 8.5C4 8.22386 4.22386 8 4.5 8H6.5C6.77614 8 7 8.22386 7 8.5C7 8.77614 6.77614 9 6.5 9H4.5C4.22386 9 4 8.77614 4 8.5ZM8 8.5C8 8.22386 8.22386 8 8.5 8H9.5C9.77614 8 10 8.22386 10 8.5C10 8.77614 9.77614 9 9.5 9H8.5C8.22386 9 8 8.77614 8 8.5Z\" fill=\"#fff\"></path></svg>Language</strong><span>Off</span></div><svg width=\"15\" height=\"20\" viewBox=\"0 0 8 16\" fill=\"#fff\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M0.158843 0.134474C-0.0430326 0.322891 -0.0539427 0.639286 0.134474 0.841161L6.81606 8L0.134474 15.1588C-0.0539427 15.3607 -0.0430326 15.6771 0.158843 15.8655C0.360718 16.0539 0.677113 16.043 0.86553 15.8412L7.86553 8.34116C8.04483 8.14906 8.04483 7.85095 7.86553 7.65884L0.86553 0.158843C0.677113 -0.0430326 0.360718 -0.0539428 0.158843 0.134474Z\"></path></svg>",
+      "className": "styles_container___vR43"
+    },
+    {
+      "textContent": "Style",
+      "innerHTML": "<div class=\"styles_contentSettingOption__QL_Ci\"><strong><svg width=\"16\" height=\"12\" viewBox=\"0 0 16 12\" fill=\"#F7F9FA\" xmlns=\"http://www.w3.org/2000/svg\" class=\"styles_subtitleIcon__KP7zU\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M0.799988 0.792882C0.799988 0.575913 0.979074 0.400024 1.19999 0.400024H9.19999C9.4209 0.400024 9.59999 0.575913 9.59999 0.792882C9.59999 1.00985 9.4209 1.18574 9.19999 1.18574H5.59999V11.0072C5.59999 11.2241 5.4209 11.4 5.19999 11.4C4.97907 11.4 4.79999 11.2241 4.79999 11.0072L4.79999 1.18574H1.19999C0.979074 1.18574 0.799988 1.00985 0.799988 0.792882ZM9.59999 4.72145C9.59999 4.50448 9.77907 4.3286 9.99999 4.3286H14.8C15.0209 4.3286 15.2 4.50448 15.2 4.72145C15.2 4.93842 15.0209 5.11431 14.8 5.11431H12.8V11.0072C12.8 11.2241 12.6209 11.4 12.4 11.4C12.1791 11.4 12 11.2241 12 11.0072V5.11431H9.99999C9.77907 5.11431 9.59999 4.93842 9.59999 4.72145Z\"></path></svg>Style</strong><span></span></div><svg width=\"15\" height=\"20\" viewBox=\"0 0 8 16\" fill=\"#fff\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M0.158843 0.134474C-0.0430326 0.322891 -0.0539427 0.639286 0.134474 0.841161L6.81606 8L0.134474 15.1588C-0.0539427 15.3607 -0.0430326 15.6771 0.158843 15.8655C0.360718 16.0539 0.677113 16.043 0.86553 15.8412L7.86553 8.34116C8.04483 8.14906 8.04483 7.85095 7.86553 7.65884L0.86553 0.158843C0.677113 -0.0430326 0.360718 -0.0539428 0.158843 0.134474Z\"></path></svg>",
+      "className": "styles_container___vR43"
+    }
+  ],
+  "step3": {
+    "clickedLang": true
+  },
+  "langMenu": [
+    {
+      "role": "menuitem",
+      "ariaLabel": "Off",
+      "ariaChecked": null,
+      "textContent": "Off",
+      "innerHTML": "Off<svg width=\"15\" height=\"20\" viewBox=\"0 0 16 11\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M15.8621 0.155173C16.0525 0.355139 16.0448 0.671627 15.8448 0.86207L5.34483 10.8621C5.15652 11.0414 4.86218 11.0465 4.66782 10.8737L0.167823 6.87371C-0.038568 6.69025 -0.0571583 6.37421 0.126301 6.16782C0.30976 5.96143 0.625796 5.94284 0.832187 6.1263L4.98833 9.82064L15.1552 0.137932C15.3551 -0.0525111 15.6716 -0.0447918 15.8621 0.155173Z\" fill=\"#fff\"></path></svg>",
+      "className": "styles_container___vR43 styles_active__KFRcL"
+    },
+    {
+      "role": "menuitem",
+      "ariaLabel": "English",
+      "ariaChecked": null,
+      "textContent": "English",
+      "innerHTML": "English",
+      "className": "styles_container___vR43"
+    },
+    {
+      "role": "menuitem",
+      "ariaLabel": "Español",
+      "ariaChecked": null,
+      "textContent": "Español",
+      "innerHTML": "Español",
+      "className": "styles_container___vR43"
+    },
+    {
+      "role": "menuitem",
+      "ariaLabel": "Français",
+      "ariaChecked": null,
+      "textContent": "Français",
+      "innerHTML": "Français",
+      "className": "styles_container___vR43"
+    },
+    {
+      "role": "menuitem",
+      "ariaLabel": "العربية",
+      "ariaChecked": null,
+      "textContent": "العربية",
+      "innerHTML": "العربية",
+      "className": "styles_container___vR43"
+    },
+    {
+      "role": "menuitem",
+      "ariaLabel": "हिन्दी",
+      "ariaChecked": null,
+      "textContent": "हिन्दी",
+      "innerHTML": "हिन्दी",
+      "className": "styles_container___vR43"
+    },
+    {
+      "role": "menuitem",
+      "ariaLabel": "中文 (中国)",
+      "ariaChecked": null,
+      "textContent": "中文 (中国)",
+      "innerHTML": "中文 (中国)",
+      "className": "styles_container___vR43"
+    }
+  ]
+}
