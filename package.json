@@ -1,41 +1,27 @@
 {
-  "name": "adrian-transcript-automation",
+  "name": "adrian-transcript-scraper",
   "version": "1.0.0",
-  "description": "Modular TypeScript automation for extracting and processing Adrian Cantrill course transcripts using Puppeteer and a service-oriented architecture",
-  "bin": {
-    "adrian-transcript": "dist/main.js"
-  },
+  "description": "Chrome Extension for automated extraction and processing of Adrian Cantrill course transcripts",
   "scripts": {
-    "setup": "npm install && npm link",
-    "prepare": "tsc",
-    "dev": "tsx src/main.ts",
+    "dev": "vite",
+    "build": "vite build",
     "lint": "biome check src",
     "fix": "biome check --write --unsafe src"
   },
-  "dependencies": {
-    "commander": "14.0.3",
-    "glob": "13.0.6",
-    "puppeteer": "24.43.0",
-    "puppeteer-extra": "3.3.6",
-    "puppeteer-extra-plugin-stealth": "2.11.2"
-  },
+  "dependencies": {},
   "keywords": [
     "automation",
     "transcript",
-    "puppeteer"
+    "chrome-extension"
   ],
   "author": "",
   "license": "MIT",
-  "type": "commonjs",
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
-    "@types/dotenv": "^6.1.1",
-    "@types/glob": "^8.1.0",
+    "@crxjs/vite-plugin": "^2.0.0-beta.31",
+    "@types/chrome": "^0.1.42",
     "@types/node": "^25.0.2",
-    "@types/puppeteer": "^5.4.7",
-    "dotenv": "^17.4.2",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^6.1.0"
   }
 }

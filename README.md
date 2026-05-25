@@ -1,90 +1,75 @@
-# Adrian Cantrill Transcript Automation
+# Adrian Cantrill Transcript Scraper
 
-A TypeScript CLI tool to automate the extraction of transcripts from Adrian Cantrill's courses. It uses Puppeteer to scrape course metadata and a parallel worker pool to process video subtitle segments into consolidated text files.
+A lightweight Google Chrome Extension (Manifest V3) that automates the extraction and processing of lesson transcripts from Adrian Cantrill's course platform (`learn.cantrill.io`). 
 
-## 🚀 Quickstart
-
-1.  **Clone & Install**:
-    ```bash
-    git clone https://github.com/your-repo/adrian-transcript.git
-    cd adrian-transcript
-    npm install
-    ```
-2.  **Configure**: Copy `.env.example` to `.env` and provide your Teachable credentials and preferences.
-3.  **Run**: Use either the global command or the development script.
-
-### Option A: Global Command
-Install the global command using `npm run setup`.
-You can run the tool from anywhere in the project:
-```bash
-adrian-transcript scrape
-adrian-transcript play
-```
-
-### Option B: Development Script
-Alternatively, run the source directly using `npm run dev`:
-```bash
-npm run dev scrape
-npm run dev play
-```
-
-## 🛠️ Configuration
-
-The tool is configured primarily via the `.env` file. Edit it to customize the automation:
-| Variable | Description |
-| :--- | :--- |
-| `EMAIL` / `PASSWORD` | Your Teachable credentials. |
-| `COURSE_ID` | The ID from your course URL (e.g., `1820301`). |
-| SESSION | Filter by section title or index (e.g., "IAM" or "1"). Takes priority over `ALL`. |
-| `ALL` | Set to `true` to process the entire manifest (ignored if `SESSION` is set). |
-| `CONCURRENCY` | Number of parallel browser instances (recommended: 4). |
-| `SEEK` | Set to `true` to rapidly seek through videos (fast) or `false` for real-time. |
-| `DIRECT` | Set to `true` to bypass video playback and download VTTs directly from CDN. |
-
-## 📖 CLI Reference
-
-The CLI is intentionally minimal, with all logic controlled by your environment variables.
-
-### 1. `scrape`
-Scans the course dashboard and saves the structure to `data/course_manifest.json`.
-
-| Flag | Description |
-| :--- | :--- |
-| `-d, --debug` | Enable headful mode and DevTools. |
+It bypasses Cloudflare protections and CAPTCHAs by running directly in your browser, intercepts the Hotmart subtitle streams via network inspection, and converts `.webvtt` files into prose transcripts.
 
 ---
 
-### 2. `play`
-Orchestrates the capture of subtitle streams and generates text transcripts.
+## ✨ Features
 
-| Flag | Description |
-| :--- | :--- |
-| `-d, --debug` | Enable headful mode for debugging. |
+- **In-Browser Execution**: Bypasses bot detection seamlessly.
+- **Curriculum Scanning**: Scrape the course dashboard to automatically map out all sections and lessons.
+- **Download Current**: Snipe the prose transcript for the active lesson instantly.
+- **Download All (Bulk Scrape)**: Automate downloading of all transcripts across the entire course. It spins up 3 background tabs concurrently to process them at speed without interrupting your active browsing.
+- **Direct CDN Fetching**: Fetches subtitles directly from the Hotmart CDN, merging the segment assets in milliseconds.
 
-**Examples**:
-```bash
-# Process based on .env settings
-adrian-transcript play
+---
 
-# Process with direct CDN extraction (fastest)
-adrian-transcript play --direct
+## 🛠️ Installation & Setup
 
-# Process with headful browser for debugging
-adrian-transcript play --debug
-```
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-repo/adrian-transcript.git
+   cd adrian-transcript
+   ```
 
+2. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-## 📁 Output Structure
+3. **Build the Extension**:
+   ```bash
+   npm run build
+   ```
+   This generates the production bundle in the `dist-extension/` directory.
 
-Captured data is organized logically:
-```
-data/
-├── course_manifest.json          # Course map produced by scrape
-└── transcripts/
-    ├── 01 - Introduction/
-    │   ├── Welcome to the Course.txt
-    │   └── Course Overview.txt
-    └── 02 - IAM/
-        ├── IAM Basics.txt
-        └── IAM Policies.txt
-```
+4. **Load the Extension in Chrome**:
+   - Open Google Chrome and go to `chrome://extensions/`.
+   - Enable **Developer mode** (toggle in the top-right corner).
+   - Click **Load unpacked** (top-left button).
+   - Select the `dist-extension/` folder in this repository.
+
+---
+
+## 🚀 How to Use
+
+1. Navigate to your course dashboard on [learn.cantrill.io](https://learn.cantrill.io) (e.g., your AWS Certified Solutions Architect course).
+2. You will see a premium glassmorphic floating dashboard labeled **🍊 Adrian Scraper** in the bottom-right corner.
+3. Click **🔍 Scan Course** to index all sections and lessons. (Required before using "Download All").
+4. Click **💾 Download Current** to process and save the transcript of the video you are currently watching.
+5. Click **📥 Download All** to run the multi-tab background scraper. Transcripts will save automatically into your browser's default `Downloads` directory under a `transcripts/` folder.
+
+---
+
+## 📂 Development
+
+- **Run Dev Server** (auto-reloads changes during development):
+  ```bash
+  npm run dev
+  ```
+- **Lint Code**:
+  ```bash
+  npm run lint
+  ```
+- **Format Code**:
+  ```bash
+  npm run fix
+  ```
+
+---
+
+## 📜 License
+
+MIT License. For educational purposes only.
