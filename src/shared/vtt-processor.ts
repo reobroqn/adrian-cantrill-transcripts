@@ -1,13 +1,4 @@
-/**
- * vtt-processor.ts - Logic for converting VTT segments to prose.
- * Ported from src/services/browser/player/vtt.ts to be browser-compatible.
- */
-
-export interface VttSegment {
-    timeRange: string;
-    content: string;
-    contentId?: string;
-}
+import type { VttSegment } from "./types";
 
 const PATTERNS = {
     TIME_RANGE_SEPARATOR: " --> ",

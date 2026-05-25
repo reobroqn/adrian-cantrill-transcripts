@@ -9,16 +9,17 @@
     "https://*.hotmart.com/*"
   ],
   "background": {
-    "service_worker": "src/extension/background.ts",
+    "service_worker": "src/background/index.ts",
     "type": "module"
   },
   "content_scripts": [
     {
       "matches": ["https://learn.cantrill.io/*"],
-      "js": ["src/extension/content.ts"]
+      "js": ["src/content/index.ts"]
     }
   ],
   "action": {
-    "default_title": "Adrian Scraper"
+    "default_title": "Adrian Scraper",
+    "default_popup": "src/popup/index.html"
   }
 }
