@@ -11,7 +11,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib60/
 parts/
 sdist/
@@ -48,3 +47,6 @@ vtt_segments/
 
 node_modules/
 data/
+dist-extension/
+scratch/
+
