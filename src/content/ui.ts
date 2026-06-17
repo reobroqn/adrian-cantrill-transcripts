@@ -3,7 +3,7 @@ import { getBulkState } from "../shared/storage";
 export interface UICallbacks {
     onScan: () => void;
     onDownloadCurrent: () => void;
-    onDownloadAll: () => void;
+    onDownloadSession: () => void;
     onCancel: () => void;
 }
 
@@ -65,9 +65,9 @@ export function showProgress(completedCount: number, total: number) {
     if (cancelBtn) {
         cancelBtn.style.display = "block";
     }
-    const downloadAllBtn = document.getElementById("adrian-download-all-btn");
-    if (downloadAllBtn) {
-        downloadAllBtn.style.display = "none";
+    const downloadSessionBtn = document.getElementById("adrian-download-session-btn");
+    if (downloadSessionBtn) {
+        downloadSessionBtn.style.display = "none";
     }
 }
 
@@ -81,9 +81,9 @@ export function showFinished() {
     if (cancelBtn) {
         cancelBtn.style.display = "none";
     }
-    const downloadAllBtn = document.getElementById("adrian-download-all-btn");
-    if (downloadAllBtn) {
-        downloadAllBtn.style.display = "block";
+    const downloadSessionBtn = document.getElementById("adrian-download-session-btn");
+    if (downloadSessionBtn) {
+        downloadSessionBtn.style.display = "block";
     }
     alert("Bulk download completed!");
 }
@@ -98,9 +98,9 @@ export function showCancelled() {
     if (cancelBtn) {
         cancelBtn.style.display = "none";
     }
-    const downloadAllBtn = document.getElementById("adrian-download-all-btn");
-    if (downloadAllBtn) {
-        downloadAllBtn.style.display = "block";
+    const downloadSessionBtn = document.getElementById("adrian-download-session-btn");
+    if (downloadSessionBtn) {
+        downloadSessionBtn.style.display = "block";
     }
     alert("Bulk download cancelled.");
 }
@@ -116,7 +116,6 @@ export function injectUI(callbacks: UICallbacks) {
     card.style.zIndex = "99999";
     card.style.display = "flex";
     card.style.flexDirection = "column";
-    card.style.gap = "10px";
     card.style.padding = "16px";
     card.style.background = "rgba(28, 28, 35, 0.85)";
     card.style.backdropFilter = "blur(12px)";
@@ -128,6 +127,7 @@ export function injectUI(callbacks: UICallbacks) {
         "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     card.style.color = "#f3f4f6";
     card.style.width = "220px";
+    card.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
 
     // Header Title
     const header = document.createElement("div");
@@ -137,9 +137,50 @@ export function injectUI(callbacks: UICallbacks) {
     header.style.letterSpacing = "0.5px";
     header.style.display = "flex";
     header.style.alignItems = "center";
-    header.style.gap = "6px";
-    header.innerHTML = "<span>🍊</span> Adrian Scraper";
+    header.style.justifyContent = "space-between";
+    header.style.cursor = "pointer";
+    header.style.userSelect = "none";
+
+    const titleSpan = document.createElement("span");
+    titleSpan.innerHTML = "<span>🍊</span> Adrian Scraper";
+    header.appendChild(titleSpan);
+
+    const toggleBtn = document.createElement("span");
+    toggleBtn.innerText = "▼";
+    toggleBtn.style.fontSize = "10px";
+    toggleBtn.style.color = "#9ca3af";
+    toggleBtn.style.transition = "transform 0.2s ease";
+    header.appendChild(toggleBtn);
+
     card.appendChild(header);
+
+    // Collapsible Body
+    const bodyContainer = document.createElement("div");
+    bodyContainer.id = "adrian-scraper-body";
+    bodyContainer.style.display = "flex";
+    bodyContainer.style.flexDirection = "column";
+    bodyContainer.style.gap = "10px";
+    bodyContainer.style.width = "100%";
+    bodyContainer.style.marginTop = "10px";
+    bodyContainer.style.transition = "all 0.3s ease";
+    card.appendChild(bodyContainer);
+
+    // Collapse Handler
+    let isCollapsed = false;
+    header.onclick = () => {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+            bodyContainer.style.display = "none";
+            toggleBtn.innerText = "▲";
+            card.style.width = "140px";
+            card.style.padding = "10px 12px";
+        } else {
+            bodyContainer.style.display = "flex";
+            toggleBtn.innerText = "▼";
+            card.style.width = "220px";
+            card.style.padding = "16px";
+        }
+    };
 
     // Status text
     const statusEl = document.createElement("div");
@@ -148,7 +189,7 @@ export function injectUI(callbacks: UICallbacks) {
     statusEl.style.color = "#9ca3af";
     statusEl.style.marginBottom = "4px";
     statusEl.innerText = "Status: Ready";
-    card.appendChild(statusEl);
+    bodyContainer.appendChild(statusEl);
 
     // Progress Bar Container
     const progContainer = document.createElement("div");
@@ -169,7 +210,7 @@ export function injectUI(callbacks: UICallbacks) {
     progBar.style.transition = "width 0.3s ease";
 
     progContainer.appendChild(progBar);
-    card.appendChild(progContainer);
+    bodyContainer.appendChild(progContainer);
 
     // 1. Scan Course Button (Amber/Orange)
     const scanBtn = createModernButton(
@@ -178,7 +219,7 @@ export function injectUI(callbacks: UICallbacks) {
         "#b45309",
         callbacks.onScan,
     );
-    card.appendChild(scanBtn);
+    bodyContainer.appendChild(scanBtn);
 
     // 2. Download Current Button (Emerald/Green)
     const downloadBtn = createModernButton(
@@ -187,17 +228,17 @@ export function injectUI(callbacks: UICallbacks) {
         "#047857",
         callbacks.onDownloadCurrent,
     );
-    card.appendChild(downloadBtn);
+    bodyContainer.appendChild(downloadBtn);
 
-    // 3. Download All Button (Blue/Royal)
-    const downloadAllBtn = createModernButton(
-        "📥 Download All",
+    // 3. Download Session Button (Blue/Royal)
+    const downloadSessionBtn = createModernButton(
+        "📥 Download Session",
         "#2563eb",
         "#1d4ed8",
-        callbacks.onDownloadAll,
+        callbacks.onDownloadSession,
     );
-    downloadAllBtn.id = "adrian-download-all-btn";
-    card.appendChild(downloadAllBtn);
+    downloadSessionBtn.id = "adrian-download-session-btn";
+    bodyContainer.appendChild(downloadSessionBtn);
 
     // 4. Cancel Bulk Button (Red/Danger)
     const cancelBtn = createModernButton(
@@ -208,7 +249,7 @@ export function injectUI(callbacks: UICallbacks) {
     );
     cancelBtn.id = "adrian-cancel-btn";
     cancelBtn.style.display = "none";
-    card.appendChild(cancelBtn);
+    bodyContainer.appendChild(cancelBtn);
 
     document.body.appendChild(card);
 

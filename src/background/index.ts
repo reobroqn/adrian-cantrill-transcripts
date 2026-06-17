@@ -1,4 +1,5 @@
 import {
+    getBulkState,
     getLastVideoId,
     getMasterPlaylistUrl,
     removeBulkState,
@@ -64,6 +65,8 @@ function extractVideoId(url: string): string | null {
     return match ? match[1] : null;
 }
 
+const tabPlaylistUrls = new Map<number, string>();
+
 // Listen for master playlist URLs
 chrome.webRequest.onCompleted.addListener(
     (details) => {
@@ -74,8 +77,11 @@ chrome.webRequest.onCompleted.addListener(
             const videoId = extractVideoId(url);
             if (videoId) {
                 setMasterPlaylistUrl(videoId, url);
+                if (details.tabId && details.tabId !== -1) {
+                    tabPlaylistUrls.set(details.tabId, url);
+                }
                 console.log(
-                    `[M3U8 Captured] Video: ${videoId} | Master playlist saved.`,
+                    `[M3U8 Captured] Video: ${videoId} | Tab: ${details.tabId} | Master playlist saved.`,
                 );
             }
         }
@@ -98,11 +104,12 @@ chrome.runtime.onMessage.addListener(
         }
 
         if (message.type === "DOWNLOAD_TRANSCRIPT") {
-            const { videoId, filename, masterUrl } = message.payload;
-            handleDownload(videoId, filename, masterUrl)
+            const { videoId, filename, masterUrl, sectionTitle } = message.payload;
+            const tabId = _sender.tab?.id;
+            handleDownload(videoId, filename, masterUrl, tabId)
                 .then((res) => {
                     if (res.ok && res.prose) {
-                        saveToFile(res.prose, filename);
+                        saveToFile(res.prose, filename, sectionTitle);
                         sendResponse({ ok: true });
                     } else {
                         sendResponse({ ok: false, error: res.error });
@@ -122,14 +129,22 @@ chrome.runtime.onMessage.addListener(
         }
 
         if (message.type === "START_BULK_DOWNLOAD") {
-            startBulkDownload().then((res) => sendResponse(res));
+            const sectionTitle = message.payload?.sectionTitle;
+            startBulkDownload(sectionTitle).then((res) => sendResponse(res));
             return true; // Keep channel open for async
         }
 
         if (message.type === "CANCEL_BULK_DOWNLOAD") {
-            removeBulkState().then(() => {
-                broadcastMessage({ type: "BULK_CANCELLED" });
-                sendResponse({ ok: true });
+            getBulkState().then((state) => {
+                if (state?.tabToIndex) {
+                    for (const id of Object.keys(state.tabToIndex)) {
+                        chrome.tabs.remove(Number(id)).catch(() => {});
+                    }
+                }
+                removeBulkState().then(() => {
+                    broadcastMessage({ type: "BULK_CANCELLED" });
+                    sendResponse({ ok: true });
+                });
             });
             return true; // Keep channel open for async
         }
@@ -140,6 +155,7 @@ async function handleDownload(
     videoId: string,
     filename: string,
     masterUrl?: string | null,
+    tabId?: number,
 ): Promise<{ ok: boolean; prose?: string; error?: string }> {
     // 1. Try with the passed masterUrl if available
     if (masterUrl) {
@@ -151,7 +167,19 @@ async function handleDownload(
         );
     }
 
-    // 2. Try with the stored master URL
+    // 2. Try with the tab-captured master URL
+    if (tabId) {
+        const tabMasterUrl = tabPlaylistUrls.get(tabId);
+        if (tabMasterUrl) {
+            console.log(
+                `[Direct] Trying tab-captured master URL for tab ${tabId}: ${tabMasterUrl}`,
+            );
+            const res = await downloadTranscriptDirect(tabMasterUrl);
+            if (res.ok) return res;
+        }
+    }
+
+    // 3. Try with the stored master URL
     const storedMasterUrl = await getMasterPlaylistUrl(videoId);
     if (storedMasterUrl && storedMasterUrl !== masterUrl) {
         console.log(
@@ -274,13 +302,23 @@ async function downloadTranscriptDirect(
     }
 }
 
-function saveToFile(content: string, filename: string) {
+function sanitizeFilename(raw: string): string {
+    return raw.replace(/[<>:"/\\|?*]/g, "_").trim();
+}
+
+function saveToFile(content: string, filename: string, sectionTitle?: string) {
     const dataUrl = `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`;
     const cleanFilename =
         filename && filename.trim().length > 0 ? filename.trim() : "transcript";
+    
+    let subfolder = "";
+    if (sectionTitle) {
+        subfolder = sanitizeFilename(sectionTitle) + "/";
+    }
+
     chrome.downloads.download({
         url: dataUrl,
-        filename: `transcripts/${cleanFilename}.txt`,
+        filename: `transcripts/${subfolder}${cleanFilename}.txt`,
         saveAs: false,
     });
 }
