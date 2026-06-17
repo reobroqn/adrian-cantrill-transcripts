@@ -23,7 +23,7 @@ export function broadcastMessage(msg: ExtensionMessage) {
 /**
  * Bulk Scraper Automation Logic (Concurrent Batch)
  */
-export async function startBulkDownload(): Promise<{
+export async function startBulkDownload(sectionTitle?: string): Promise<{
     ok: boolean;
     error?: string;
 }> {
@@ -45,6 +45,9 @@ export async function startBulkDownload(): Promise<{
     // Flatten lectures
     const flatQueue: QueueItem[] = [];
     for (const section of manifest) {
+        if (sectionTitle && section.section_title !== sectionTitle) {
+            continue;
+        }
         for (const lecture of section.lectures) {
             flatQueue.push({ section: section.section_title, lecture });
         }
@@ -113,7 +116,6 @@ async function advanceBulkWorker(tabId: number, state: BulkState) {
     } else {
         // This tab has no more work; close it
         delete state.tabToIndex[tabId];
-        chrome.tabs.remove(tabId).catch(() => {});
 
         broadcastMessage({
             type: "BULK_PROGRESS",
@@ -129,9 +131,11 @@ async function advanceBulkWorker(tabId: number, state: BulkState) {
                 `[Bulk] All ${state.completedCount} transcripts downloaded.`,
             );
             await removeBulkState();
+            chrome.tabs.remove(tabId).catch(() => {});
             broadcastMessage({ type: "BULK_FINISHED" });
         } else {
             await setBulkState(state);
+            chrome.tabs.remove(tabId).catch(() => {});
         }
     }
 }
@@ -154,7 +158,11 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, _tab) => {
     setTimeout(() => {
         chrome.tabs.sendMessage(
             tabId,
-            { type: "AUTOMATION_PROCESS_LECTURE", index: assignedIndex },
+            {
+                type: "AUTOMATION_PROCESS_LECTURE",
+                index: assignedIndex,
+                sectionTitle: state.queue[assignedIndex].section,
+            },
             async (response) => {
                 if (chrome.runtime.lastError) {
                     console.error(

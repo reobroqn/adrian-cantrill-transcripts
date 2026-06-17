@@ -43,12 +43,13 @@ export type ExtensionMessage =
               videoId: string;
               filename: string;
               masterUrl?: string | null;
+              sectionTitle?: string;
           };
       }
     | { type: "GET_LAST_VIDEO_ID" }
-    | { type: "START_BULK_DOWNLOAD" }
+    | { type: "START_BULK_DOWNLOAD"; payload?: { sectionTitle?: string } }
     | { type: "CANCEL_BULK_DOWNLOAD" }
-    | { type: "AUTOMATION_PROCESS_LECTURE"; index: number }
+    | { type: "AUTOMATION_PROCESS_LECTURE"; index: number; sectionTitle?: string }
     | {
           type: "BULK_PROGRESS";
           payload: { completedCount: number; total: number };

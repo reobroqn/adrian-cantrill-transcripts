@@ -11,6 +11,18 @@ import {
     showProgress,
     updateStatus,
 } from "./ui";
+import { getCourseManifest } from "../shared/storage";
+
+function extractLectureId(urlStr: string): string | null {
+    try {
+        const url = new URL(urlStr);
+        const match = url.pathname.match(/\/lectures\/([^/]+)/);
+        return match ? match[1] : null;
+    } catch {
+        const match = urlStr.match(/\/lectures\/([^/?#]+)/);
+        return match ? match[1] : null;
+    }
+}
 
 const SCRAPER_SELECTORS = {
     COURSE_SECTION: ".course-section",
@@ -178,35 +190,31 @@ const uiCallbacks = {
             );
         }
 
-        if (videoId && videoId.length < 20) {
-            console.log(
-                `[Adrian Scraper] Sniffed videoId ${videoId} is a short embed ID. Resetting to query background worker for UUID.`,
-            );
-            videoId = null;
-        }
-
-        if (!videoId) {
-            console.log(
-                "[Adrian Scraper] DOM video ID check failed or reset. Querying background worker...",
-            );
-            const response = await chrome.runtime.sendMessage({
-                type: "GET_LAST_VIDEO_ID",
-            });
-            if (response?.videoId) {
-                videoId = response.videoId;
-                console.log(
-                    `[Adrian Scraper] Using last captured ID from background: ${videoId}`,
-                );
-            }
-        }
-
-        if (videoId && videoId.length >= 20 && iframeDetails) {
+        if (videoId && iframeDetails) {
             computedMasterUrl = `https://vtt-player.hotmart.com/video/${videoId}/master.m3u8${iframeDetails.queryParams}`;
         }
 
         if (videoId) {
             const title = getLectureTitle();
             updateStatus("Downloading...");
+
+            // Look up current section title from manifest
+            const manifest = await getCourseManifest();
+            const currentUrl = window.location.href;
+            const currentLectureId = extractLectureId(currentUrl);
+            let sectionTitle: string | undefined;
+            if (manifest && currentLectureId) {
+                for (const section of manifest) {
+                    for (const lecture of section.lectures) {
+                        if (extractLectureId(lecture.url) === currentLectureId) {
+                            sectionTitle = section.section_title;
+                            break;
+                        }
+                    }
+                    if (sectionTitle) break;
+                }
+            }
+
             chrome.runtime.sendMessage(
                 {
                     type: "DOWNLOAD_TRANSCRIPT",
@@ -214,6 +222,7 @@ const uiCallbacks = {
                         videoId,
                         filename: sanitizeFilename(title),
                         masterUrl: computedMasterUrl,
+                        sectionTitle,
                     },
                 },
                 (res) => {
@@ -232,21 +241,57 @@ const uiCallbacks = {
             );
         }
     },
-    onDownloadAll: () => {
-        updateStatus("Starting Bulk...");
-        chrome.runtime.sendMessage({ type: "START_BULK_DOWNLOAD" }, (res) => {
-            if (!res?.ok) {
-                updateStatus("Ready");
-                alert(res?.error || "Failed to start bulk download.");
+    onDownloadSession: async () => {
+        updateStatus("Identifying Session...");
+        const manifest = await getCourseManifest();
+        if (!manifest || manifest.length === 0) {
+            updateStatus("Ready");
+            alert("Please run 'Scan Course' first to build the manifest.");
+            return;
+        }
+
+        const currentUrl = window.location.href;
+        const currentLectureId = extractLectureId(currentUrl);
+
+        let matchedSection: CourseSection | null = null;
+        if (currentLectureId) {
+            for (const section of manifest) {
+                for (const lecture of section.lectures) {
+                    if (extractLectureId(lecture.url) === currentLectureId) {
+                        matchedSection = section;
+                        break;
+                    }
+                }
+                if (matchedSection) break;
             }
-        });
+        }
+
+        if (!matchedSection) {
+            updateStatus("Ready");
+            alert("Current lecture not found in scanned manifest. Please run 'Scan Course' again.");
+            return;
+        }
+
+        updateStatus("Starting Session...");
+        chrome.runtime.sendMessage(
+            {
+                type: "START_BULK_DOWNLOAD",
+                payload: { sectionTitle: matchedSection.section_title },
+            },
+            (res) => {
+                if (!res?.ok) {
+                    updateStatus("Ready");
+                    alert(res?.error || "Failed to start session bulk download.");
+                }
+            },
+        );
     },
     onCancel: () => {
         chrome.runtime.sendMessage({ type: "CANCEL_BULK_DOWNLOAD" });
     },
 };
 
-async function processCurrentPageForAutomation(): Promise<{
+async function processCurrentPageForAutomation(sectionTitle?: string): Promise<{
     success: boolean;
     reason?: string;
 }> {
@@ -262,19 +307,6 @@ async function processCurrentPageForAutomation(): Promise<{
         videoId = await findVideoIdFallback();
     }
 
-    if (videoId && videoId.length < 20) {
-        videoId = null;
-    }
-
-    if (!videoId) {
-        const response = await chrome.runtime.sendMessage({
-            type: "GET_LAST_VIDEO_ID",
-        });
-        if (response?.videoId) {
-            videoId = response.videoId;
-        }
-    }
-
     if (!videoId) {
         return {
             success: false,
@@ -282,7 +314,7 @@ async function processCurrentPageForAutomation(): Promise<{
         };
     }
 
-    if (videoId && videoId.length >= 20 && iframeDetails) {
+    if (videoId && iframeDetails) {
         computedMasterUrl = `https://vtt-player.hotmart.com/video/${videoId}/master.m3u8${iframeDetails.queryParams}`;
     }
 
@@ -294,6 +326,7 @@ async function processCurrentPageForAutomation(): Promise<{
             videoId,
             filename: sanitizeFilename(title),
             masterUrl: computedMasterUrl,
+            sectionTitle,
         },
     });
 
@@ -309,7 +342,7 @@ async function processCurrentPageForAutomation(): Promise<{
 chrome.runtime.onMessage.addListener(
     (message: ExtensionMessage, _sender, sendResponse) => {
         if (message.type === "AUTOMATION_PROCESS_LECTURE") {
-            processCurrentPageForAutomation()
+            processCurrentPageForAutomation(message.sectionTitle)
                 .then((result) => sendResponse(result))
                 .catch((err) =>
                     sendResponse({ success: false, reason: err.message }),
