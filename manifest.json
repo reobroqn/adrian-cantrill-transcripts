@@ -3,10 +3,16 @@
   "name": "Adrian Transcript Scraper",
   "version": "1.0.0",
   "description": "Extract transcripts from Adrian Cantrill's courses",
-  "permissions": ["downloads", "webRequest", "storage", "declarativeNetRequest"],
+  "permissions": [
+    "downloads",
+    "webRequest",
+    "storage",
+    "declarativeNetRequest"
+  ],
   "host_permissions": [
     "https://learn.cantrill.io/*",
-    "https://*.hotmart.com/*"
+    "https://*.hotmart.com/*",
+    "https://*.play.hotmart.com/*"
   ],
   "background": {
     "service_worker": "src/background/index.ts",
@@ -14,8 +20,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://learn.cantrill.io/*"],
-      "js": ["src/content/index.ts"]
+      "matches": [
+        "https://learn.cantrill.io/*"
+      ],
+      "js": [
+        "src/content/index.ts"
+      ]
     }
   ],
   "action": {

@@ -34,7 +34,6 @@ async function setupHeadersSpoofing() {
             },
             condition: {
                 urlFilter: "*://*.hotmart.com/*",
-                resourceTypes: ["xmlhttprequest"],
             },
         },
     ];
@@ -61,17 +60,17 @@ setupHeadersSpoofing();
 function extractVideoId(url: string): string | null {
     let match = url.match(/\/video\/([^/]+)\/hls\//);
     if (match) return match[1];
-    match = url.match(/\/video\/([^/]+)\/master\.m3u8/);
+    match = url.match(/\/video\/([^/]+)\/master/);
     return match ? match[1] : null;
 }
 
-// Listen for M3U8 URLs
+// Listen for master playlist URLs
 chrome.webRequest.onCompleted.addListener(
     (details) => {
         const url = details.url;
 
-        // Capture master.m3u8 for "direct" fetching
-        if (url.includes("master.m3u8")) {
+        // Capture master playlist for "direct" fetching
+        if (url.includes("master") && url.includes(".m3u8")) {
             const videoId = extractVideoId(url);
             if (videoId) {
                 setMasterPlaylistUrl(videoId, url);
@@ -139,7 +138,7 @@ chrome.runtime.onMessage.addListener(
 
 async function handleDownload(
     videoId: string,
-    _filename: string,
+    filename: string,
     masterUrl?: string | null,
 ): Promise<{ ok: boolean; prose?: string; error?: string }> {
     // 1. Try with the passed masterUrl if available
@@ -179,6 +178,9 @@ async function downloadTranscriptDirect(
     };
 
     try {
+        const queryIndex = masterUrl.indexOf("?");
+        const queryParams = queryIndex !== -1 ? masterUrl.substring(queryIndex) : "";
+
         const masterRes = await fetch(masterUrl, { headers });
         if (!masterRes.ok)
             throw new Error(
@@ -202,10 +204,15 @@ async function downloadTranscriptDirect(
             );
         const subtitleUri = uriMatch[1];
 
-        const baseUrl = masterUrl.substring(0, masterUrl.lastIndexOf("/") + 1);
-        const subtitleUrl = subtitleUri.startsWith("http")
+        const cleanMasterUrl = queryIndex !== -1 ? masterUrl.substring(0, queryIndex) : masterUrl;
+        const baseUrl = cleanMasterUrl.substring(0, cleanMasterUrl.lastIndexOf("/") + 1);
+        let subtitleUrl = subtitleUri.startsWith("http")
             ? subtitleUri
             : baseUrl + subtitleUri;
+        
+        if (queryParams && !subtitleUrl.includes("?")) {
+            subtitleUrl += queryParams;
+        }
 
         const subRes = await fetch(subtitleUrl, { headers });
         if (!subRes.ok)
@@ -214,15 +221,25 @@ async function downloadTranscriptDirect(
             );
         const subContent = await subRes.text();
 
-        const subBaseUrl = subtitleUrl.substring(
+        const subQueryIndex = subtitleUrl.indexOf("?");
+        const cleanSubtitleUrl = subQueryIndex !== -1 ? subtitleUrl.substring(0, subQueryIndex) : subtitleUrl;
+        const subBaseUrl = cleanSubtitleUrl.substring(
             0,
-            subtitleUrl.lastIndexOf("/") + 1,
+            cleanSubtitleUrl.lastIndexOf("/") + 1,
         );
+
+        const subQueryParams = subQueryIndex !== -1 ? subtitleUrl.substring(subQueryIndex) : queryParams;
 
         const vttUrls = subContent
             .split("\n")
             .filter((l) => l.trim() && !l.startsWith("#"))
-            .map((l) => (l.startsWith("http") ? l : subBaseUrl + l));
+            .map((l) => {
+                let segmentUrl = l.startsWith("http") ? l : subBaseUrl + l;
+                if (subQueryParams && !segmentUrl.includes("?")) {
+                    segmentUrl += subQueryParams;
+                }
+                return segmentUrl;
+            });
 
         if (vttUrls.length === 0) {
             throw new Error("No VTT segments found in subtitle playlist");
